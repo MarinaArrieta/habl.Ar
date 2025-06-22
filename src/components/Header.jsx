@@ -16,7 +16,7 @@ import {
     HStack,
 } from "@chakra-ui/react";
 import { IoMenu } from "react-icons/io5";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,7 +64,7 @@ export default function Navbar() {
                 display={{ base: "none", lg: "flex" }}
                 gap={6}
             >
-                <NavLink to="/techniques">
+                <NavLink as={Link} to="techniques">
                     <Text fontSize="18px" color="primary.500">
                         Técnicas
                     </Text>
@@ -83,6 +83,11 @@ export default function Navbar() {
                     <Text fontSize="18px" color="primary.500">
                         Preguntas Frecuentes
                     </Text>
+                </NavLink>
+                <NavLink to="/notfound">
+                    {/* <Text fontSize="18px" color="primary.500">
+                        Preguntas Frecuentes
+                    </Text> */}
                 </NavLink>
             </Box>
             <Drawer
