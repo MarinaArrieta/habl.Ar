@@ -12,6 +12,7 @@ import {
     useDisclosure,
     VStack,
     Image,
+    Heading,
 } from "@chakra-ui/react";
 import { IoMenu } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
@@ -31,7 +32,7 @@ export default function Navbar() {
                     src='/logo-hablar.png'
                     alt='Logo Hablar'
                 />
-                <Text>Habl.Ar</Text>
+                <Heading>Habl.Ar</Heading>
             </Box>
             {/* Menú hamburguesa SOLO en mobile */}
             <IconButton
