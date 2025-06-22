@@ -8,16 +8,11 @@ const theme = extendTheme({
     styles: {
         global: {
             body: {
-                bg: "#ecead4", // Cambialo por cualquier color que quieras
-                color: "gray.800", // Color de texto base (opcional)
+                bg: "#ecead4",
+                color: "gray.800",
             },
         },
     },
-    // colors: {
-    //     fondo: {
-    //         claro: "#ecead4",
-    //     },
-    // }
     colors: {
         primary: {
             50: "#e1f2ef",

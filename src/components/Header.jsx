@@ -13,6 +13,7 @@ import {
     VStack,
     Image,
     Heading,
+    HStack,
 } from "@chakra-ui/react";
 import { IoMenu } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
@@ -21,15 +22,23 @@ export default function Navbar() {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
-        <Container display="flex" justifyContent="space-between" alignItems="center" py={4}>
+        <HStack
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            p='18px'
+            w='100%'
+            m={0}
+        >
             <Box
                 boxSize='sm'
                 display='flex'
                 alignItems='center'
                 h='none'
+                w='unset'
             >
                 <Image
-                    w={{ base: '60px', md: '100px' }}
+                    w={{ base: '60px', md: '75px' }}
                     src='/logo-hablar.png'
                     alt='Logo Hablar'
                 />
@@ -42,25 +51,38 @@ export default function Navbar() {
             </Box>
             {/* Menú hamburguesa SOLO en mobile */}
             <IconButton
-                icon={<IoMenu />}
+                icon={<IoMenu fontSize="30px" />}
                 aria-label="Menú"
-                display={{ base: "block", sm: "none" }}
+                display={{ base: "block", lg: "none" }}
                 variant="ghost"
-                fontSize="24px"
                 onClick={onOpen}
                 color="primary.500"
             />
 
             {/* Links visibles SOLO en sm hacia arriba */}
-            <Box display={{ base: "none", sm: "flex" }} gap={6}>
+            <Box
+                display={{ base: "none", lg: "flex" }}
+                gap={6}
+            >
+                <NavLink to="/techniques">
+                    <Text fontSize="18px" color="primary.500">
+                        Técnicas
+                    </Text>
+                </NavLink>
                 <NavLink to="/login">
-                    <Text fontSize={{ base: "18px", md: "25px", lg: "29px" }}>Login</Text>
+                    <Text fontSize="18px" color="primary.500">
+                        Login
+                    </Text>
                 </NavLink>
                 <NavLink to="/register">
-                    <Text fontSize={{ base: "18px", md: "25px", lg: "29px" }}>Registrate</Text>
+                    <Text fontSize="18px" color="primary.500">
+                        Registrate
+                    </Text>
                 </NavLink>
                 <NavLink to="/faq">
-                    <Text fontSize={{ base: "18px", md: "25px", lg: "29px" }}>Preguntas Frecuentes</Text>
+                    <Text fontSize="18px" color="primary.500">
+                        Preguntas Frecuentes
+                    </Text>
                 </NavLink>
             </Box>
             <Drawer
@@ -82,8 +104,25 @@ export default function Navbar() {
                     </DrawerHeader>
                     <DrawerBody >
                         <VStack align="start" spacing={4}>
+                            <NavLink to="/techniques" onClick={onClose}>
+                                <Text
+                                    fontSize="20px"
+                                    color="primary.500"
+                                    _hover={{ color: "primary.300" }}
+                                    transition="color 0.2s"
+                                >
+                                    Técnicas
+                                </Text>
+                            </NavLink>
                             <NavLink to="/login" onClick={onClose}>
-                                <Text fontSize="20px">Login</Text>
+                                <Text
+                                    fontSize="20px"
+                                    color="primary.500"
+                                    _hover={{ color: "primary.300" }}
+                                    transition="color 0.2s"
+                                >
+                                    Login
+                                </Text>
                             </NavLink>
                             <NavLink to="/register" onClick={onClose}>
                                 <Text fontSize="20px">Registrate</Text>
@@ -95,6 +134,6 @@ export default function Navbar() {
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
-        </Container>
+        </HStack>
     );
 }
