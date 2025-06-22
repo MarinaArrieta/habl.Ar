@@ -26,13 +26,19 @@ export default function Navbar() {
                 boxSize='sm'
                 display='flex'
                 alignItems='center'
+                h='none'
             >
                 <Image
-                    w='100px'
+                    w={{ base: '60px', md: '100px' }}
                     src='/logo-hablar.png'
                     alt='Logo Hablar'
                 />
-                <Heading>Habl.Ar</Heading>
+                <Heading
+                    fontSize={{ base: '1.8rem' }}
+                    color="primary.500"
+                >
+                    Habl.Ar
+                </Heading>
             </Box>
             {/* Menú hamburguesa SOLO en mobile */}
             <IconButton
@@ -42,6 +48,7 @@ export default function Navbar() {
                 variant="ghost"
                 fontSize="24px"
                 onClick={onOpen}
+                color="primary.500"
             />
 
             {/* Links visibles SOLO en sm hacia arriba */}
@@ -56,30 +63,22 @@ export default function Navbar() {
                     <Text fontSize={{ base: "18px", md: "25px", lg: "29px" }}>Preguntas Frecuentes</Text>
                 </NavLink>
             </Box>
-
-            {/* Drawer lateral para mobile */}
             <Drawer
                 size="full"
                 placement="right"
                 onClose={onClose}
                 isOpen={isOpen}
+                backgroundColor=''
             >
                 <DrawerOverlay />
-                <DrawerContent >
+                <DrawerContent bg="secondary.500" color="primary.500">
                     <DrawerCloseButton />
-                    {/* <DrawerHeader>Menú</DrawerHeader> */}
                     <DrawerHeader>
-                    {/* <Box
-                        boxSize='sm'
-                        display='flex'
-                        alignItems='center'
-                    > */}
                         <Image
                             w='80px'
                             src='/logo-hablar.png'
                             alt='Logo Hablar'
                         />
-                    {/* </Box> */}
                     </DrawerHeader>
                     <DrawerBody >
                         <VStack align="start" spacing={4}>
