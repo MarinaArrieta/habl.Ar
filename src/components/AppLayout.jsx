@@ -1,13 +1,14 @@
 import { VStack } from "@chakra-ui/react";
-import Header from "./Header";
-import Main from "./Main";
+import Header from '../components/Header';
+import Routing from "../routes/Routing";
 
 
 export default function AppLayout() {
   return (
     <VStack>
       <Header />
-      <Main />
+      <Routing />
+      {/* <Home /> */}
     </VStack>
   )
 }
