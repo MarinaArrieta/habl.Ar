@@ -1,9 +1,19 @@
-import React from 'react'
+import { 
+  FormControl, 
+  FormLabel, 
+  Input 
+} from "@chakra-ui/react";
+
 
 export default function Login() {
   return (
-    <div>
-      hola desde Login
-    </div>
+    <FormControl w="70%">
+      <FormLabel>Nombre</FormLabel>
+      <Input type="text" border="1px solid green" />
+      <FormLabel>Ingresar con email</FormLabel>
+      <Input type='email' border="1px solid green" />
+      <FormLabel>Contraseña</FormLabel>
+      <Input type='password' border="1px solid green" />
+    </FormControl>
   )
 }

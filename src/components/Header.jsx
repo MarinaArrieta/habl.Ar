@@ -1,5 +1,4 @@
 import {
-    Container,
     IconButton,
     Box,
     Text,
@@ -19,6 +18,7 @@ import { IoMenu } from "react-icons/io5";
 import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar() {
+    
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
@@ -37,19 +37,22 @@ export default function Navbar() {
                 h='none'
                 w='unset'
             >
-                <Image
-                    w={{ base: '60px', md: '75px' }}
-                    src='/logo-hablar.png'
-                    alt='Logo Hablar'
-                />
-                <Heading
-                    fontSize={{ base: '1.8rem' }}
-                    color="primary.500"
-                >
-                    Habl.Ar
-                </Heading>
+                <NavLink as={Link} to="/">
+                    <Image
+                        w={{ base: '60px', md: '75px' }}
+                        src='/logo-hablar.png'
+                        alt='Logo Hablar'
+                    />
+                </NavLink>
+                <NavLink as={Link} to="/">
+                    <Heading
+                        fontSize={{ base: '1.8rem' }}
+                        color="primary.500"
+                    >
+                        Habl.Ar
+                    </Heading>
+                </NavLink>
             </Box>
-            {/* Menú hamburguesa SOLO en mobile */}
             <IconButton
                 icon={<IoMenu fontSize="30px" />}
                 aria-label="Menú"
@@ -58,8 +61,6 @@ export default function Navbar() {
                 onClick={onOpen}
                 color="primary.500"
             />
-
-            {/* Links visibles SOLO en sm hacia arriba */}
             <Box
                 display={{ base: "none", lg: "flex" }}
                 gap={6}
@@ -69,26 +70,26 @@ export default function Navbar() {
                         Técnicas
                     </Text>
                 </NavLink>
-                <NavLink to="/login">
+                <NavLink to="login">
                     <Text fontSize="18px" color="primary.500">
                         Login
                     </Text>
                 </NavLink>
-                <NavLink to="/register">
+                <NavLink to="register">
                     <Text fontSize="18px" color="primary.500">
                         Registrate
                     </Text>
                 </NavLink>
-                <NavLink to="/faq">
+                <NavLink to="faq">
                     <Text fontSize="18px" color="primary.500">
                         Preguntas Frecuentes
                     </Text>
                 </NavLink>
-                <NavLink to="/notfound">
-                    {/* <Text fontSize="18px" color="primary.500">
+                {/* <NavLink to="/notfound">
+                    <Text fontSize="18px" color="primary.500">
                         Preguntas Frecuentes
-                    </Text> */}
-                </NavLink>
+                    </Text>
+                </NavLink> */}
             </Box>
             <Drawer
                 size="full"
@@ -109,7 +110,7 @@ export default function Navbar() {
                     </DrawerHeader>
                     <DrawerBody >
                         <VStack align="start" spacing={4}>
-                            <NavLink to="/techniques" onClick={onClose}>
+                            <NavLink to="techniques" onClick={onClose}>
                                 <Text
                                     fontSize="20px"
                                     color="primary.500"
@@ -119,7 +120,7 @@ export default function Navbar() {
                                     Técnicas
                                 </Text>
                             </NavLink>
-                            <NavLink to="/login" onClick={onClose}>
+                            <NavLink to="login" onClick={onClose}>
                                 <Text
                                     fontSize="20px"
                                     color="primary.500"
@@ -129,10 +130,10 @@ export default function Navbar() {
                                     Login
                                 </Text>
                             </NavLink>
-                            <NavLink to="/register" onClick={onClose}>
+                            <NavLink to="register" onClick={onClose}>
                                 <Text fontSize="20px">Registrate</Text>
                             </NavLink>
-                            <NavLink to="/faq" onClick={onClose}>
+                            <NavLink to="faq" onClick={onClose}>
                                 <Text fontSize="20px">Preguntas Frecuentes</Text>
                             </NavLink>
                         </VStack>
