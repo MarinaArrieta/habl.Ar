@@ -18,7 +18,7 @@ import { IoMenu } from "react-icons/io5";
 import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar() {
-    
+
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
@@ -99,7 +99,11 @@ export default function Navbar() {
                 backgroundColor=''
             >
                 <DrawerOverlay />
-                <DrawerContent bg="secondary.500" color="primary.500">
+                <DrawerContent
+                    bg="secondary.500"
+                    color="primary.500"
+                    width={{ base: "100%", md: "350px" }}
+                >
                     <DrawerCloseButton />
                     <DrawerHeader>
                         <Image

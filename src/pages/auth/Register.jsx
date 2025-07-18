@@ -9,7 +9,12 @@ import {
 
 export default function Register() {
   return (
-    <FormControl w="70%">
+    <FormControl
+      // w="70%"
+      display='flex'
+      flexDirection='column'
+      gap='15px'
+    >
       <FormLabel>Nombre</FormLabel>
       <Input type="text" border="1px solid green" />
       <FormLabel>Email address</FormLabel>
