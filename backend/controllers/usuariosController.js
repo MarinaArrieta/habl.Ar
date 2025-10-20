@@ -2,7 +2,9 @@ import pool from "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+// ==========================================================
 // REGISTRO PÚBLICO (Incluye: comun, psicologo, voluntario)
+// ==========================================================
 export const registerPublicController = async (req, res) => {
     try {
         const {
@@ -17,14 +19,17 @@ export const registerPublicController = async (req, res) => {
             titulo = "",
             // Campos de Voluntario
             fecha_nacimiento = null,
-            clave_aprobacion = null, 
+            clave_aprobacion = null,
         } = req.body;
 
         // Obtener nombres de archivo, si existen (solo para psicólogo)
         const foto_titulo = req.files?.foto_titulo ? req.files.foto_titulo[0].filename : "";
         const certificado = req.files?.certificado ? req.files.certificado[0].filename : "";
+        const fotoUrl = req.files?.foto_perfil ? req.files.foto_perfil[0].filename : null; 
 
         let cursoAprobadoDB = false;
+        let estadoAprobacion = (tipo === 'psicologo' || tipo === 'voluntario') ? 'pendiente' : 'aprobado';
+
 
         // --- Validación de Voluntario ---
         if (tipo === "voluntario") {
@@ -66,7 +71,7 @@ export const registerPublicController = async (req, res) => {
         const hashedPassword = await bcrypt.hash(contrasena, 10);
 
         const [result] = await pool.query(
-            `INSERT INTO usuarios (nombre, apellido, email, contrasena, tipo, matricula, universidad, titulo, foto_titulo, certificado, fecha_nacimiento, curso_aprobado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO usuarios (nombre, apellido, email, contrasena, tipo, matricula, universidad, titulo, foto_titulo, certificado, fecha_nacimiento, curso_aprobado, estado_aprobacion, fotoUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 nombre, 
                 apellido, 
@@ -79,7 +84,9 @@ export const registerPublicController = async (req, res) => {
                 foto_titulo, 
                 certificado,
                 fecha_nacimiento, 
-                cursoAprobadoDB
+                cursoAprobadoDB,
+                estadoAprobacion, 
+                fotoUrl, 
             ]
         );
 
@@ -90,7 +97,9 @@ export const registerPublicController = async (req, res) => {
     }
 };
 
+// ==========================================================
 // INICIO DE SESIÓN
+// ==========================================================
 export const loginController = async (req, res) => {
     try {
         const { email, contrasena } = req.body;
@@ -134,36 +143,35 @@ export const loginController = async (req, res) => {
     }
 };
 
+// ==========================================================
 // MIDDLEWARE DE AUTENTICACIÓN (VERIFICAR TOKEN)
+// ==========================================================
 export const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token == null) {
-        // Respuesta inmediata si NO hay token
         return res.status(401).json({ error: 'Acceso denegado. Se requiere autenticación.' }); 
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
-            // Respuesta inmediata si el token es INVÁLIDO o EXPIRADO
             return res.status(403).json({ error: 'Token inválido o expirado.' }); 
         }
-
-        // Si es válido, adjuntar datos y CONTINUAR
         req.usuario = decoded; 
-        next(); // ⬅¡ESTA LÍNEA ES LA CLAVE PARA EVITAR QUE SE CUEGUE!
+        next(); 
     });
 };
 
+// ==========================================================
 // OBTENER UN SOLO USUARIO POR ID (Usado en VolunterProfile)
+// ==========================================================
 export const getUsuarioController = async (req, res) => {
     try {
         const { id } = req.params;
         
-        // Comprobación de seguridad
         if (req.usuario.id.toString() !== id && req.usuario.tipo !== 'admin') {
-             return res.status(403).json({ error: "No tienes permiso para ver este perfil." });
+            return res.status(403).json({ error: "No tienes permiso para ver este perfil." });
         }
 
         const [rows] = await pool.query(
@@ -183,13 +191,14 @@ export const getUsuarioController = async (req, res) => {
     }
 };
 
+// ==========================================================
 // ACTUALIZAR USUARIO (Usado en VolunterProfile)
+// ==========================================================
 export const updateUsuarioController = async (req, res) => {
     try {
         const { id } = req.params;
         const { nombre, apellido, email, contrasena } = req.body;
 
-        // Comprobación de seguridad
         if (req.usuario.id.toString() !== id && req.usuario.tipo !== 'admin') {
             return res.status(403).json({ error: "No tienes permiso para modificar este perfil." });
         }
@@ -227,12 +236,13 @@ export const updateUsuarioController = async (req, res) => {
     }
 };
 
+// ==========================================================
 // ELIMINAR USUARIO (Usado en VolunterProfile)
+// ==========================================================
 export const deleteUsuarioController = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Comprobación de seguridad
         if (req.usuario.id.toString() !== id && req.usuario.tipo !== 'admin') {
             return res.status(403).json({ error: "No tienes permiso para eliminar esta cuenta." });
         }
@@ -251,6 +261,35 @@ export const deleteUsuarioController = async (req, res) => {
     }
 };
 
+export const getPsicologosListController = async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            `SELECT 
+                id, 
+                nombre, 
+                apellido, 
+                matricula, 
+                email,
+                titulo,
+                foto_titulo,
+                certificado
+            FROM 
+                usuarios 
+            WHERE 
+                tipo = 'psicologo' 
+            AND 
+                estado_aprobacion = 'aprobado'`
+        );
+        
+        res.json(rows);
+    } catch (error) {
+        console.error("Error al obtener la lista de psicólogos:", error);
+        res.status(500).json({ error: "Error interno del servidor al obtener la lista de psicólogos." });
+    }
+};
+
+
+// Funciones no implementadas (Placeholders)
 export const registerAdminController = async (req, res) => { 
     return res.status(501).json({ error: "Función de registro de admin no implementada." });
 };

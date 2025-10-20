@@ -112,6 +112,11 @@ export default function Navbar() {
                         Dudas Comunes
                     </Text>
                 </NavLink>
+                <NavLink to="psicologos">
+                    <Text fontSize="18px" color="primary.500" _hover={{color: "blue.50"}}>
+                        Psicólogos
+                    </Text>
+                </NavLink>
             </Box>
             <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay />
@@ -161,6 +166,9 @@ export default function Navbar() {
                             </NavLink>
                             <NavLink to="faq" onClick={onClose}>
                                 <Text fontSize="20px" _hover={{color: "blue.50"}}>Dudas Comunes</Text>
+                            </NavLink>
+                            <NavLink to="psicologos" onClick={onClose}>
+                                <Text fontSize="20px" _hover={{color: "blue.50"}}>Psicólogos</Text>
                             </NavLink>
                         </VStack>
                     </DrawerBody>

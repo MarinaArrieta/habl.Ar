@@ -1,20 +1,21 @@
 import { Router } from "express";
 import upload from "../utils/upload.js";
 import {
-  registerPublicController,
-  registerAdminController,
-  loginController,
-  getUsuariosController,
-  getUsuarioController,
-  updateUsuarioController,
-  deleteUsuarioController,
-  verificarToken,
+    registerPublicController,
+    registerAdminController,
+    loginController,
+    getUsuariosController,
+    getUsuarioController,
+    updateUsuarioController,
+    deleteUsuarioController,
+    verificarToken,
+    // 💡 NUEVO: Controlador específico para obtener la lista de psicólogos
+    getPsicologosListController, 
 } from "../controllers/usuariosController.js";
 
 const router = Router();
 
 // Middleware de Autorización (solo Admin)
-// Este middleware chequea si el usuario verificado por el token es un admin.
 const adminAuth = (req, res, next) => {
     if (req.user && req.user.tipo === 'admin') {
         next();
@@ -23,34 +24,43 @@ const adminAuth = (req, res, next) => {
     }
 };
 
+// ==========================================================
+// 🚨 RUTA PÚBLICA PARA LISTAR PSICÓLOGOS 🚨
+// Esta ruta no requiere token (verificarToken) ni autorización (adminAuth)
+// para que cualquier usuario pueda ver la lista.
+// Debe coincidir con la URL usada en frontend/src/services/psicologosService.js
+router.get("/psicologos", getPsicologosListController);
+// ==========================================================
+
+
 // Rutas Públicas
 // Registro público (usuarios comunes, psicólogos, voluntarios)
 router.post(
-  "/register-public",
-  upload.fields([
-    { name: "foto_titulo", maxCount: 1 },
-    { name: "certificado", maxCount: 1 },
-  ]),
-  registerPublicController // 🚨 Usamos el nombre corregido
+    "/register-public",
+    upload.fields([
+        { name: "foto_titulo", maxCount: 1 },
+        { name: "certificado", maxCount: 1 },
+    ]),
+    registerPublicController
 );
 
 // Login
 router.post("/login", loginController);
 
 
-// Rutas Protegidas
+// Rutas Protegidas (Requieren Token y Autorización Admin en algunos casos)
 // Ruta para que un ADMIN registre a otro ADMIN
 router.post(
-    "/register-admin", 
-    verificarToken, 
-    adminAuth, 
+    "/register-admin",
+    verificarToken,
+    adminAuth,
     registerAdminController
 );
 
-// Obtener todos los usuarios
-router.get("/", verificarToken, adminAuth, getUsuariosController); 
+// Obtener todos los usuarios (Solo Admin)
+router.get("/", verificarToken, adminAuth, getUsuariosController);
 
-// Obtener, Actualizar, Eliminar
+// Obtener, Actualizar, Eliminar (Rutas para el perfil propio o gestionadas por Admin)
 router.get("/:id", verificarToken, getUsuarioController);
 router.put("/:id", verificarToken, updateUsuarioController);
 router.delete("/:id", verificarToken, deleteUsuarioController);

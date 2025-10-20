@@ -19,4 +19,9 @@ export const faqData = [
         pregunta: "¿Cómo puedo ser voluntario?",
         respuesta: "Debes registrarte como 'Voluntario' y aprobar el curso de capacitación que encontrarás en la sección de registro. Luego, tu solicitud será revisada por nuestro equipo.",
     },
+    {
+        id: 5,
+        pregunta: "¿Tu duda persiste?",
+        respuesta: "Escríbenos a: arrietamarina12@gmail.com y te responderemos a la brevedad.",
+    },
 ];

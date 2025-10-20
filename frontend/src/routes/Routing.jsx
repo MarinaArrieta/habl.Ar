@@ -11,7 +11,8 @@ import PsicologoProfile from "../pages/PsicologoProfile";
 import VolunterProfile from "../pages/VolunterProfile";
 import VoluntarioCurso from "../pages/VoluntarioCurso";
 import SobreNosotros from "../pages/SobreNosotros";
-import TecnicasPorCategoria from "../pages/TecnicasPorCategoria"; 
+import TecnicasPorCategoria from "../pages/TecnicasPorCategoria";
+import PsicologosList from "../pages/PsicologosList";
 
 // Componente para proteger rutas de admin
 const AdminRoute = ({ children }) => {
@@ -41,6 +42,7 @@ export default function Routing() {
             <Route path="/faq" element={<Faq />} />
             <Route path="/curso-voluntario" element={<VoluntarioCurso />} />
             <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+            <Route path="/psicologos" element={<PsicologosList />} />
             
             {/* RUTA DINÁMICA: Carga la lista de técnicas filtradas por Categoría (:slug) */}
             <Route 

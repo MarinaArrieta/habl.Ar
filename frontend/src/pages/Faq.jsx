@@ -71,7 +71,7 @@ export default function Faq() {
                             >
                                 <Text color="#F0DCC9">
                                     <AccordionButton 
-                                        _expanded={{ bg: 'yellow.50', color: "blue.50" }} 
+                                        _expanded={{ bg: 'blue.50', color: "#F0DCC9" }} 
                                         p={4} 
                                         textAlign="left"
                                         fontWeight="bold"
