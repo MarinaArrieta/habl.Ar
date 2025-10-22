@@ -75,12 +75,6 @@ export default function Navbar() {
                         Técnicas
                     </Text>
                 </NavLink>
-
-                {usuario?.tipo === "admin" && (
-                    <NavLink to="admin-techniques">
-                        <Text _hover={{ color: "blue.50" }}>Panel Admin</Text>
-                    </NavLink>
-                )}
                 {usuario?.tipo === "psicologo" && (
                     <NavLink to={`/psicologo/${usuario.id}`}>
                         <Text
@@ -92,11 +86,28 @@ export default function Navbar() {
                         </Text>
                     </NavLink>
                 )}
-
+                <NavLink to="sobre-nosotros" onClick={onClose}>
+                    <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>Sobre Nosotros</Text>
+                </NavLink>
+                <NavLink to="faq">
+                    <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>
+                        Dudas Comunes
+                    </Text>
+                </NavLink>
+                <NavLink to="psicologos">
+                    <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>
+                        Psicólogos
+                    </Text>
+                </NavLink>
+                {usuario?.tipo === "admin" && (
+                    <NavLink to="admin-techniques">
+                        <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }} fontWeight="bold">Panel</Text>
+                    </NavLink>
+                )}
                 {!usuario ? (
                     <>
                         <NavLink to="login">
-                            <Text fontSize="18px" color="primary.500" _hover={{color: "blue.50"}}>
+                            <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>
                                 Acceder
                             </Text>
                         </NavLink>
@@ -104,19 +115,6 @@ export default function Navbar() {
                 ) : (
                     <LogoutButton />
                 )}
-                <NavLink to="sobre-nosotros" onClick={onClose}>
-                    <Text fontSize="18px" color="primary.500" _hover={{color: "blue.50"}}>Sobre Nosotros</Text>
-                </NavLink>
-                <NavLink to="faq">
-                    <Text fontSize="18px" color="primary.500" _hover={{color: "blue.50"}}>
-                        Dudas Comunes
-                    </Text>
-                </NavLink>
-                <NavLink to="psicologos">
-                    <Text fontSize="18px" color="primary.500" _hover={{color: "blue.50"}}>
-                        Psicólogos
-                    </Text>
-                </NavLink>
             </Box>
             <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay />
@@ -130,22 +128,27 @@ export default function Navbar() {
                         <Image w='80px' src='/logo-hablar.png' alt='Logo Hablar' />
                     </DrawerHeader>
                     <DrawerBody>
+                        {usuario?.tipo === "admin" && (
+                            <NavLink to="admin-techniques">
+                                <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>Panel</Text>
+                            </NavLink>
+                        )}
                         <VStack align="start" spacing={4}>
                             <NavLink to="techniques" onClick={onClose}>
-                                <Text fontSize="20px" _hover={{color: "blue.50"}}transition="color 0.2s">
+                                <Text fontSize="20px" _hover={{ color: "blue.50" }} transition="color 0.2s">
                                     Técnicas
                                 </Text>
                             </NavLink>
                             {usuario?.tipo === "admin" && (
                                 <NavLink to="admin-techniques" onClick={onClose}>
-                                    <Text fontSize="20px" _hover={{color: "blue.50"}}transition="color 0.2s">
+                                    <Text fontSize="20px" _hover={{ color: "blue.50" }} transition="color 0.2s">
                                         Panel Admin
                                     </Text>
                                 </NavLink>
                             )}
                             {usuario?.tipo === "psicologo" && (
                                 <NavLink to={`/psicologo/${usuario.id}`} onClick={onClose}>
-                                    <Text fontSize="20px" _hover={{color: "blue.50"}}transition="color 0.2s">
+                                    <Text fontSize="20px" _hover={{ color: "blue.50" }} transition="color 0.2s">
                                         Mi Perfil
                                     </Text>
                                 </NavLink>
@@ -153,7 +156,7 @@ export default function Navbar() {
                             {!usuario ? (
                                 <>
                                     <NavLink to="login" onClick={onClose}>
-                                        <Text fontSize="20px" _hover={{color: "blue.50"}}>
+                                        <Text fontSize="20px" _hover={{ color: "blue.50" }}>
                                             Login
                                         </Text>
                                     </NavLink>
@@ -162,13 +165,13 @@ export default function Navbar() {
                                 <LogoutButton />
                             )}
                             <NavLink to="sobre-nosotros" onClick={onClose}>
-                                <Text fontSize="20px" _hover={{color: "blue.50"}}>Sobre Nosotros</Text>
+                                <Text fontSize="20px" _hover={{ color: "blue.50" }}>Sobre Nosotros</Text>
                             </NavLink>
                             <NavLink to="faq" onClick={onClose}>
-                                <Text fontSize="20px" _hover={{color: "blue.50"}}>Dudas Comunes</Text>
+                                <Text fontSize="20px" _hover={{ color: "blue.50" }}>Dudas Comunes</Text>
                             </NavLink>
                             <NavLink to="psicologos" onClick={onClose}>
-                                <Text fontSize="20px" _hover={{color: "blue.50"}}>Psicólogos</Text>
+                                <Text fontSize="20px" _hover={{ color: "blue.50" }}>Psicólogos</Text>
                             </NavLink>
                         </VStack>
                     </DrawerBody>

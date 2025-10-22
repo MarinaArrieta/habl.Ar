@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-    // AÑADE 'Link' DE CHAKRA UI AQUÍ
     FormControl,
     FormLabel,
     Input,
@@ -12,12 +11,11 @@ import {
     Divider,
     VStack,
     Image,
-    Link, // <-- Importado desde Chakra UI
-    Center
+    Link,
 } from "@chakra-ui/react";
-// RENOMBRA EL LINK DE REACT-ROUTER-DOM A 'RouterLink'
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import { registerPublic } from "../services/psicologosService";
 
 export default function Register() {
 
@@ -34,13 +32,12 @@ export default function Register() {
         foto_titulo: null, certificado: null,
         fecha_nacimiento: "",
         clave_aprobacion: "",
+        foto_perfil: null, // ✅ NUEVO CAMPO AÑADIDO
     });
 
     useEffect(() => {
-
         if (location.state && location.state.cursoAprobadoKey) {
             setCursoAprobadoKey(location.state.cursoAprobadoKey);
-
             toast({
                 title: "Clave de Curso Recibida",
                 description: `¡Felicidades! Usa la clave ${location.state.cursoAprobadoKey} para registrarte como voluntario.`,
@@ -48,22 +45,18 @@ export default function Register() {
                 duration: 8000,
                 isClosable: true
             });
-
             setFormData(prev => ({ ...prev, tipo: 'voluntario' }));
         }
     }, [location.state, toast]);
 
     const handleChange = (e) => {
-        const { name, value, files, type } = e.target;
-
-
+        const { name, value, files } = e.target;
         if (files) {
             setFormData(prev => ({ ...prev, [name]: files[0] }));
             return;
         }
 
         if (name === 'tipo') {
-
             let newFormData = { ...formData, [name]: value };
 
             if (value !== 'psicologo') {
@@ -83,7 +76,6 @@ export default function Register() {
             setFormData(newFormData);
             return;
         }
-
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
@@ -111,29 +103,52 @@ export default function Register() {
             Object.keys(formData).forEach(key => {
                 const value = formData[key];
 
-                if (value === null || value === "") {
+                // NO enviar campos nulos o vacíos, a menos que sea foto_perfil (si quieres enviarla como null/vacío si no se seleccionó)
+                if (key !== 'foto_perfil' && (value === null || value === "")) {
                     return;
                 }
+                
+                // Excluir campos específicos de tipo psicologo si no lo es
                 if (formData.tipo !== 'psicologo' && ['matricula', 'universidad', 'titulo', 'foto_titulo', 'certificado'].includes(key)) {
                     return;
                 }
+                
+                // Excluir campos específicos de tipo voluntario si no lo es
                 if (formData.tipo !== 'voluntario' && ['fecha_nacimiento', 'clave_aprobacion'].includes(key)) {
                     return;
                 }
 
+                // Si es foto_perfil y es null, no la añadimos. Si es un archivo, sí.
+                if (key === 'foto_perfil' && value === null) {
+                    return;
+                }
+                
                 data.append(key, value);
             });
 
             await registerPublic(data);
-
-            toast({
-                title: "Registro Exitoso",
-                description: "Tu cuenta ha sido creada. Por favor, inicia sesión.",
-                status: "success",
-                duration: 5000,
-                isClosable: true
-            });
-
+            if (formData.tipo === 'psicologo') {
+                toast({
+                    title: "Registro exitoso, ¡pero tu cuenta está Pendiente! ⏳",
+                    description: (
+                        <>
+                            Tu cuenta como **Psicólogo** ha sido creada, pero requiere **aprobación manual**.
+                            Revisaremos la documentación y te **avisaremos por email** cuando puedas iniciar sesión. ¡Gracias por tu paciencia!
+                        </>
+                    ),
+                    status: "info",
+                    duration: 10000,
+                    isClosable: true
+                });
+            } else {
+                toast({
+                    title: "Registro Exitoso",
+                    description: "Tu cuenta ha sido creada. Por favor, inicia sesión.",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true
+                });
+            }
             navigate('/login');
 
         } catch (err) {
@@ -153,7 +168,6 @@ export default function Register() {
     return (
         <VStack w={{ base: '80%', xl: '60%' }}>
             <VStack alignItems="flex-start" w="100%">
-                {/* Usa RouterLink para la navegación interna */}
                 <RouterLink to="/login">
                     <Button
                         variant="solid3D"
@@ -190,10 +204,9 @@ export default function Register() {
                         maxW={{ base: "163px", md: '177px' }}
                         src='/registrate.png'
                         alt='Registro'
-                        /* filter="drop-shadow(-2px 7px 6px #2d2d2d)" */
                     />
                 </Box>
-                <FormControl onSubmit={handleSubmit} width="100%">
+                <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                     <FormLabel mt={4} color="violet.50">Tipo de Usuario</FormLabel>
                     <Select name="tipo" value={formData.tipo} onChange={handleChange} border="1px solid #353887"
                         _focusVisible={{
@@ -250,7 +263,22 @@ export default function Register() {
                                 borderColor: "violet.50"
                             }} />
                     </FormControl>
-                    {/* PSICÓLOGO */}
+
+                    {/* ✅ CAMPO DE FOTO DE PERFIL (Para todos los usuarios) */}
+                    <FormControl mb={4}>
+                        <FormLabel color="violet.50">Foto de Perfil (Opcional)</FormLabel>
+                        <Input type="file" name="foto_perfil" onChange={handleChange} border="none" p="0"
+                            _focusVisible={{
+                                zIndex: 1,
+                                borderColor: 'blue.50',
+                                boxShadow: '0 0 0 1px #353887',
+                            }}
+                            _hover={{
+                                borderColor: "violet.50"
+                            }} />
+                        <FormHelperText>Sube una foto clara para tu perfil (máx. 2MB).</FormHelperText>
+                    </FormControl>
+                    {/* PSICÓLOGO  */}
                     {formData.tipo === "psicologo" && (
                         <Box mt={4} border="1px solid primary.900" borderRadius="lg">
                             <Divider orientation='horizontal' border="1px solid #DA5700" m="30px 0px 30px" />
@@ -317,6 +345,7 @@ export default function Register() {
                             </FormControl>
                         </Box>
                     )}
+                    {/* --- */}
                     {/* VOLUNTARIOS */}
                     {formData.tipo === "voluntario" && (
                         <Box mt={4}>
@@ -367,8 +396,8 @@ export default function Register() {
                                     <Divider
                                         orientation={{ base: 'horizontal', lg: 'vertical' }}
                                         border="1px solid #353887"
-                                        h={{lg: "21px"}}
-                                        m={{base: "10px 0", lg: "0"}}
+                                        h={{ lg: "21px" }}
+                                        m={{ base: "10px 0", lg: "0" }}
                                         opacity="unset"
                                         _focusVisible={{
                                             zIndex: 1,
@@ -377,7 +406,7 @@ export default function Register() {
                                         }}
                                         _hover={{
                                             borderColor: "violet.50"
-                                        }} 
+                                        }}
                                     />
                                     <Link href="/curso-voluntario" color="blue.500">
                                         👉🏽 Obtén la clave aprobando el mini curso de capacitación.
@@ -401,7 +430,7 @@ export default function Register() {
                     >
                         Registrarse
                     </Button>
-                </FormControl>
+                </form>
             </VStack>
         </VStack>
     );

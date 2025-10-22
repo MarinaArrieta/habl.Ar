@@ -8,14 +8,11 @@ export default function LogoutButton() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // 1. Limpiar storage (token y usuario)
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
 
-    // 2. Resetear el contexto
     setUsuario(null);
 
-    // 3. Redirigir al login
     navigate("/login");
   };
 

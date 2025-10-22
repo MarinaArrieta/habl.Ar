@@ -1,4 +1,7 @@
 import { Route, Routes, Navigate } from "react-router-dom";
+import AdminLayout from "../components/AdminLayout";
+import AdminUsersList from "../pages/AdminUsersList";
+
 import Techniques from "../pages/Techniques";
 import NotFound from "../pages/NotFound";
 import Home from "../pages/Home";
@@ -14,7 +17,7 @@ import SobreNosotros from "../pages/SobreNosotros";
 import TecnicasPorCategoria from "../pages/TecnicasPorCategoria";
 import PsicologosList from "../pages/PsicologosList";
 
-// Componente para proteger rutas de admin
+// Componente para proteger rutas de admin (NO CAMBIA)
 const AdminRoute = ({ children }) => {
     const user = JSON.parse(localStorage.getItem("usuario"));
     if (!user || user.tipo !== "admin") {
@@ -25,7 +28,6 @@ const AdminRoute = ({ children }) => {
 
 const ProtectedRoute = ({ children }) => {
     const user = JSON.parse(localStorage.getItem("usuario"));
-    // Si no hay usuario o si el tipo es 'comun', redirige a login.
     if (!user || user.tipo === "comun") {
         return <Navigate to="/login" replace />;
     }
@@ -43,55 +45,25 @@ export default function Routing() {
             <Route path="/curso-voluntario" element={<VoluntarioCurso />} />
             <Route path="/sobre-nosotros" element={<SobreNosotros />} />
             <Route path="/psicologos" element={<PsicologosList />} />
-            
-            {/* RUTA DINÁMICA: Carga la lista de técnicas filtradas por Categoría (:slug) */}
-            <Route 
-                path="/techniques/:slug" 
-                element={<TecnicasPorCategoria />} 
-            />
+            <Route path="/techniques/:slug" element={<TecnicasPorCategoria />} />
 
-            {/* RUTA DE PERFIL PSICÓLOGO */}
-            <Route
-                path="/psicologo/:id"
-                element={
-                    <ProtectedRoute>
-                        <PsicologoProfile />
-                    </ProtectedRoute>
-                }
-            />
+            <Route path="/psicologo/:id" element={<ProtectedRoute><PsicologoProfile /></ProtectedRoute>} />
+            <Route path="/voluntario-perfil/:id" element={<ProtectedRoute><VolunterProfile /></ProtectedRoute>} />
 
-            {/* RUTA DE PERFIL VOLUNTARIO */}
             <Route
-                path="/voluntario-perfil/:id"
+                path="/"
                 element={
-                    <ProtectedRoute>
-                        <VolunterProfile />
-                    </ProtectedRoute>
-                }
-            />
-
-            {/* Rutas protegidas solo para admins */}
-            <Route
-                path="/admin-techniques"
-                element={
-                    <AdminRoute>
-                        <AdminTechniques />
+                    <AdminRoute> {/* Protege TODAS las rutas anidadas */}
+                        <AdminLayout />
                     </AdminRoute>
                 }
-            />
+            >
+                <Route path="admin-techniques" element={<AdminTechniques />} />
 
-            {/* RUTA PROTEGIDA para registrar administradores */}
-            <Route
-                path="/admin-register"
-                element={
-                    <AdminRoute>
-                        <AdminRegister />
-                    </AdminRoute>
-                }
-            />
+                <Route path="admin-register" element={<AdminRegister />} />
 
-            {/* Opcional: Si quieres un detalle de técnica individual más adelante */}
-            {/* <Route path="/techniques/:slug/:techniqueId" element={<TecnicaDetail />} /> */}
+                <Route path="admin/users" element={<AdminUsersList />} />
+            </Route>
 
             <Route path="*" element={<NotFound />} />
         </Routes>

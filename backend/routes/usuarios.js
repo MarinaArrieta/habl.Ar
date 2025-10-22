@@ -9,13 +9,11 @@ import {
     updateUsuarioController,
     deleteUsuarioController,
     verificarToken,
-    // 💡 NUEVO: Controlador específico para obtener la lista de psicólogos
     getPsicologosListController, 
 } from "../controllers/usuariosController.js";
 
 const router = Router();
 
-// Middleware de Autorización (solo Admin)
 const adminAuth = (req, res, next) => {
     if (req.user && req.user.tipo === 'admin') {
         next();
@@ -40,6 +38,7 @@ router.post(
     upload.fields([
         { name: "foto_titulo", maxCount: 1 },
         { name: "certificado", maxCount: 1 },
+        { name: "foto_perfil", maxCount: 1 },
     ]),
     registerPublicController
 );

@@ -1,11 +1,11 @@
-import { 
-    Box, 
-    VStack, 
-    Heading, 
-    Text, 
-    Spinner, 
-    Alert, 
-    AlertIcon, 
+import {
+    Box,
+    VStack,
+    Heading,
+    Text,
+    Spinner,
+    Alert,
+    AlertIcon,
     SimpleGrid,
     Card,
     CardBody,
@@ -52,27 +52,32 @@ export default function PsicologosList() {
     }
 
     return (
-        <VStack spacing={10} p={{ base: 4, md: 10 }} align="stretch" w="full" maxW="1200px" mx="auto">
+        <VStack spacing={10} p={{ base: 4, md: 10 }} align="stretch" w={{ base: '80%', xl: '60%' }} mx="auto">
             <Heading as="h1" size="xl" textAlign="center" color="primary.700" fontWeight="extrabold">
                 Encuentra tu Profesional
             </Heading>
-            <Text textAlign="center" color="gray.600" fontSize="lg">
+            <Text textAlign="center" color="violet.50" fontSize="lg">
                 Nuestros psicólogos colaboradores están aquí para ayudarte. Todos los profesionales han sido verificados.
             </Text>
 
             {psicologos.length === 0 ? (
-                <Alert status='info' variant='subtle' mt={8} borderRadius="lg" justifyContent="center">
+                <Alert
+                    status='info'
+                    variant='subtle'
+                    mt={8} borderRadius="lg"
+                    justifyContent="center"
+                >
                     <AlertIcon />
                     Actualmente no hay psicólogos aprobados en la plataforma.
                 </Alert>
             ) : (
                 <SimpleGrid columns={columns} spacing={8} pt={4}>
                     {psicologos.map((psicologo) => (
-                        <Card 
-                            key={psicologo.id} 
-                            borderRadius="2xl" 
-                            boxShadow="2xl" 
-                            p={5} 
+                        <Card
+                            key={psicologo.id}
+                            borderRadius="2xl"
+                            boxShadow="2xl"
+                            p={5}
                             align="center"
                             bg="white"
                             transition="all 0.3s"
@@ -88,13 +93,13 @@ export default function PsicologosList() {
                                 border="4px solid"
                                 borderColor="primary.500"
                             />
-                            
+
                             <CardBody p={2} textAlign="center" w="full">
                                 <Heading size="md" color="gray.800" mb={1}>{psicologo.nombre} {psicologo.apellido}</Heading>
-                                <Tag 
-                                    size='md' 
-                                    variant='subtle' 
-                                    colorScheme='purple' 
+                                <Tag
+                                    size='md'
+                                    variant='subtle'
+                                    colorScheme='purple'
                                     mt={2}
                                     mb={3}
                                     borderRadius="full"
@@ -112,11 +117,11 @@ export default function PsicologosList() {
                                         <Text fontSize="xs" color="gray.500">(4.8/5.0)</Text>
                                     </HStack>
                                 </VStack>
-                            </CardBody> 
+                            </CardBody>
                             <CardFooter pt={2}>
-                                <Button 
-                                    leftIcon={<FaEnvelope />} 
-                                    colorScheme="orange" 
+                                <Button
+                                    leftIcon={<FaEnvelope />}
+                                    colorScheme="orange"
                                     bg="primary.500"
                                     _hover={{ bg: 'primary.700', boxShadow: 'md' }}
                                     as="a"

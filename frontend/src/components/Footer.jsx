@@ -79,6 +79,11 @@ export default function Footer() {
                 >
                     Contáctanos
                 </Link>
+                <NavLink to="psicologos">
+                    <Text color="primary.500" _hover={{ color: "blue.50" }}>
+                        Psicólogos
+                    </Text>
+                </NavLink>
             </VStack>
             <VStack>
                 <Divider

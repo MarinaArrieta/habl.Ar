@@ -88,7 +88,7 @@ export default function TecnicasPorCategoria() {
                 <Stack spacing={4} align="center">
                     {tecnicas.map((t) => (
                         <Card
-                            key={t.pk}
+                            key={t.id}
                             direction={{ base: 'column', sm: 'row' }}
                             overflow='hidden'
                             variant='outline'

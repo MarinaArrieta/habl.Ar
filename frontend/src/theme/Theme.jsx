@@ -58,6 +58,7 @@ const theme = extendTheme({
                     padding: '25px',
                     bg: `${props.colorScheme}.500`,
                     _hover: {
+                        color: "#F0DCC9",
                         bg: `${props.colorScheme}.600`,
                         boxShadow: `0px 7px 0px 0px var(--chakra-colors-${props.colorScheme}-900)`,
                     }
@@ -66,10 +67,11 @@ const theme = extendTheme({
                 outline3D: (props) => ({
                     ...base3DShadow(4, 'primary', 2),
                     borderRadius: 'md',
-                    bg: 'transparent',
+                    bg: '#920B0B',
                     borderColor: `${props.colorScheme}.500`,
                     borderWidth: '1px',
                     _hover: {
+                        color: "#F0DCC9",
                         bg: 'primary.50',
                         boxShadow: `0px 4px 0px 0px var(--chakra-colors-${props.colorScheme}-1000)`,
                     }
