@@ -43,7 +43,7 @@ export default function Faq() {
                 w="100%"
                 gap="30px"
             >
-                <Box
+                {/* <Box
                     display='flex'
                     justifyContent='center'
                     alignItems='center'
@@ -56,7 +56,7 @@ export default function Faq() {
                         alt='Dudas Image'
                         filter="drop-shadow(-2px 7px 6px #2d2d2d)"
                     />
-                </Box>
+                </Box> */}
                 <Stack spacing={4}>
                     <Accordion allowToggle> 
                         {faqData.map((item) => (

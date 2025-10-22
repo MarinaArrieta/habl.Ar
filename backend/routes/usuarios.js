@@ -22,17 +22,8 @@ const adminAuth = (req, res, next) => {
     }
 };
 
-// ==========================================================
-// 🚨 RUTA PÚBLICA PARA LISTAR PSICÓLOGOS 🚨
-// Esta ruta no requiere token (verificarToken) ni autorización (adminAuth)
-// para que cualquier usuario pueda ver la lista.
-// Debe coincidir con la URL usada en frontend/src/services/psicologosService.js
 router.get("/psicologos", getPsicologosListController);
-// ==========================================================
 
-
-// Rutas Públicas
-// Registro público (usuarios comunes, psicólogos, voluntarios)
 router.post(
     "/register-public",
     upload.fields([
@@ -46,8 +37,6 @@ router.post(
 // Login
 router.post("/login", loginController);
 
-
-// Rutas Protegidas (Requieren Token y Autorización Admin en algunos casos)
 // Ruta para que un ADMIN registre a otro ADMIN
 router.post(
     "/register-admin",
