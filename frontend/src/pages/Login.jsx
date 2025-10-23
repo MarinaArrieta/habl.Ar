@@ -13,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { login } from "../services/api";
 import { UserContext } from "../context/UserContext";
-import Footer from "../components/Footer";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -22,7 +21,7 @@ export default function Login() {
     const toast = useToast();
     const { setUsuario } = useContext(UserContext);
 
-    const navigate = useNavigate();
+    /* const navigate = useNavigate(); */
 
     const handleLogin = async () => {
         if (!email || !contrasena) {
@@ -56,8 +55,9 @@ export default function Login() {
 
             // Lógica de redirección con todos los tipos de usuario
             const usuario = res.data.usuario;
+            let redirectPath = "/";
 
-            if (usuario.tipo === "admin") {
+            /* if (usuario.tipo === "admin") {
                 navigate("/admin-techniques");
             } else if (usuario.tipo === "psicologo") {
                 navigate(`/psicologo/${usuario.id}`);
@@ -65,7 +65,19 @@ export default function Login() {
                 navigate(`/voluntario-perfil/${usuario.id}`);
             } else {
                 navigate("/");
+            } */
+            if (usuario.tipo === "admin") {
+                redirectPath = "/admin-techniques";
+            } else if (usuario.tipo === "psicologo") {
+                // 🔑 RUTA DEL PSICÓLOGO
+                redirectPath = `/psicologo/${usuario.id}`;
+            } else if (usuario.tipo === "voluntario") {
+                redirectPath = `/voluntario-perfil/${usuario.id}`;
             }
+
+            // 🚀 SOLUCIÓN: Forzar un reinicio (hard reload) del frontend.
+            // Esto garantiza que el UserContext se inicie de nuevo y vea el localStorage actualizado.
+            window.location.replace(redirectPath);
 
             // Reset campos
             setEmail("");
@@ -91,8 +103,8 @@ export default function Login() {
             marginTop="0"
             alignItems={{ base: 'center', lg: 'center' }}
             justifyContent={{ base: 'center', lg: 'none' }}
-            flexDirection={{base: "column", md: "row"}}
-            gap={{base: 0, md: "50px"}}
+            flexDirection={{ base: "column", md: "row" }}
+            gap={{ base: 0, md: "50px" }}
         >
             <Box
                 display='flex'

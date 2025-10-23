@@ -15,6 +15,7 @@ export const getUsuario = (id) => API.get(`/api/usuarios/${id}`);
 export const updateUsuario = (id, data) => API.put(`/api/usuarios/${id}`, data);
 export const deleteUsuario = (id) => API.delete(`/api/usuarios/${id}`);
 export const promoteUserToAdmin = (id) => API.post("/api/admin/register", { id });
+export const aprobarPsicologo = (id) => API.patch(`/api/usuarios/${id}/aprobar`);
 
 // TÉCNICAS
 export const getTecnicas = () => API.get("/tecnicas");

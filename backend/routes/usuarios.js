@@ -9,7 +9,8 @@ import {
     updateUsuarioController,
     deleteUsuarioController,
     verificarToken,
-    getPsicologosListController, 
+    getPsicologosListController,
+    aprobarPsicologoController,
 } from "../controllers/usuariosController.js";
 
 const router = Router();
@@ -52,6 +53,8 @@ router.get("/", verificarToken, adminAuth, getUsuariosController);
 router.get("/:id", verificarToken, getUsuarioController);
 router.put("/:id", verificarToken, updateUsuarioController);
 router.delete("/:id", verificarToken, deleteUsuarioController);
+/* router.patch('/:id/aprobar', verificarToken, aprobarPsicologoController); */
+router.put('/approve-psicologo/:id', verificarToken, adminAuth, aprobarPsicologoController);
 
 
 export default router;

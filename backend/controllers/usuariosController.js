@@ -1,6 +1,7 @@
 import pool from "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sendApprovalEmail } from "../utils/emailService.js";
 
 // ==========================================================
 // REGISTRO PÚBLICO (Incluye: comun, psicologo, voluntario)
@@ -101,14 +102,14 @@ export const registerPublicController = async (req, res) => {
     }
 };
 
-// ==========================================================
-// INICIO DE SESIÓN
-// ==========================================================
 export const loginController = async (req, res) => {
     try {
         const { email, contrasena } = req.body;
 
-        const [rows] = await pool.query("SELECT id, nombre, apellido, email, contrasena, tipo FROM usuarios WHERE email = ?", [email]);
+        const [rows] = await pool.query(
+            "SELECT id, nombre, apellido, email, contrasena, tipo, estado_aprobacion FROM usuarios WHERE email = ?", 
+            [email]
+        );
 
         if (rows.length === 0) {
             return res.status(401).json({ error: "Email o contraseña incorrectos" });
@@ -116,11 +117,18 @@ export const loginController = async (req, res) => {
 
         const usuario = rows[0];
 
-        const passwordMatch = await bcrypt.compare(contrasena, usuario.contrasena);
+        // 1. PRIMERO: Calcular y verificar la contraseña
+        const passwordMatch = await bcrypt.compare(contrasena, usuario.contrasena); // <<< passwordMatch SE DEFINE AQUI
 
         if (!passwordMatch) {
             return res.status(401).json({ error: "Email o contraseña incorrectos" });
         }
+        
+        // 2. SEGUNDO: Aplicar la validación de aprobación (usa usuario, que está definido, pero no usa passwordMatch)
+        if (usuario.tipo === 'psicologo' && usuario.estado_aprobacion !== 'aprobado') {
+            return res.status(403).json({ error: "Tu cuenta de psicólogo está pendiente de aprobación por un administrador." });
+        }
+
 
         const token = jwt.sign(
             { id: usuario.id, email: usuario.email, tipo: usuario.tipo },
@@ -324,6 +332,56 @@ export const deleteUsuarioController = async (req, res) => {
     } catch (err) {
         console.error("Error al eliminar usuario:", err);
         res.status(500).json({ error: "Error interno al eliminar el usuario" });
+    }
+};
+
+// ==========================================================
+// APROBACIÓN DE PSICÓLOGO (Solo Admin)
+// ==========================================================
+export const aprobarPsicologoController = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 1. Verificar permiso: Solo Administradores
+        if (req.user.tipo !== 'admin') {
+            return res.status(403).json({ error: "Acceso denegado. Solo administradores." });
+        }
+
+        // 2. Obtener el usuario y verificar rol/estado actual
+        const [rows] = await pool.query("SELECT id, email, nombre, tipo, estado_aprobacion FROM usuarios WHERE id = ?", [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado." });
+        }
+
+        const usuario = rows[0];
+
+        if (usuario.tipo !== 'psicologo') {
+            return res.status(400).json({ error: "Solo se pueden aprobar cuentas de tipo 'psicologo'." });
+        }
+
+        if (usuario.estado_aprobacion === 'aprobado') {
+            return res.status(400).json({ error: "El psicólogo ya está aprobado." });
+        }
+
+        // 3. Actualizar estado en la base de datos
+        const [result] = await pool.query(
+            "UPDATE usuarios SET estado_aprobacion = 'aprobado' WHERE id = ?",
+            [id]
+        );
+
+        if (result.affectedRows > 0) {
+            // 4. Enviar correo de notificación (No esperamos a que termine, para no demorar la respuesta)
+            sendApprovalEmail(usuario.email, usuario.nombre, usuario.tipo);
+
+            res.json({ message: `Psicólogo ID ${id} aprobado con éxito.` });
+        } else {
+            res.status(500).json({ error: "No se pudo actualizar el estado del psicólogo." });
+        }
+
+    } catch (error) {
+        console.error("Error al aprobar psicólogo:", error);
+        res.status(500).json({ error: "Error interno al aprobar el psicólogo." });
     }
 };
 

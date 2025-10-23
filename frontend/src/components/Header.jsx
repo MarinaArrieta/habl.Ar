@@ -22,7 +22,8 @@ import { UserContext } from "../context/UserContext";
 export default function Navbar() {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { usuario } = useContext(UserContext);
+    // 🚨 CORRECCIÓN: Ahora usamos 'usuarioActual' que es el nombre correcto del valor en el contexto.
+    const { usuarioActual } = useContext(UserContext);
 
     return (
         <HStack
@@ -75,8 +76,9 @@ export default function Navbar() {
                         Técnicas
                     </Text>
                 </NavLink>
-                {usuario?.tipo === "psicologo" && (
-                    <NavLink to={`/psicologo/${usuario.id}`}>
+                {/* Usamos usuarioActual */}
+                {usuarioActual?.tipo === "psicologo" && (
+                    <NavLink to={`/psicologo/${usuarioActual.id}`}>
                         <Text
                             fontSize="18px"
                             color="primary.500"
@@ -99,12 +101,14 @@ export default function Navbar() {
                         Psicólogos
                     </Text>
                 </NavLink>
-                {usuario?.tipo === "admin" && (
+                {/* Usamos usuarioActual */}
+                {usuarioActual?.tipo === "admin" && (
                     <NavLink to="admin-techniques">
                         <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }} fontWeight="bold">Panel</Text>
                     </NavLink>
                 )}
-                {!usuario ? (
+                {/* Usamos usuarioActual */}
+                {!usuarioActual ? (
                     <>
                         <NavLink to="login">
                             <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>
@@ -128,32 +132,30 @@ export default function Navbar() {
                         <Image w='80px' src='/logo-hablar.png' alt='Logo Hablar' />
                     </DrawerHeader>
                     <DrawerBody>
-                        {usuario?.tipo === "admin" && (
-                            <NavLink to="admin-techniques">
-                                <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>Panel</Text>
-                            </NavLink>
-                        )}
                         <VStack align="start" spacing={4}>
-                            <NavLink to="techniques" onClick={onClose}>
-                                <Text fontSize="20px" _hover={{ color: "blue.50" }} transition="color 0.2s">
-                                    Técnicas
-                                </Text>
-                            </NavLink>
-                            {usuario?.tipo === "admin" && (
+                            {/* Usamos usuarioActual */}
+                            {usuarioActual?.tipo === "admin" && (
                                 <NavLink to="admin-techniques" onClick={onClose}>
                                     <Text fontSize="20px" _hover={{ color: "blue.50" }} transition="color 0.2s">
                                         Panel Admin
                                     </Text>
                                 </NavLink>
                             )}
-                            {usuario?.tipo === "psicologo" && (
-                                <NavLink to={`/psicologo/${usuario.id}`} onClick={onClose}>
+                            <NavLink to="techniques" onClick={onClose}>
+                                <Text fontSize="20px" _hover={{ color: "blue.50" }} transition="color 0.2s">
+                                    Técnicas
+                                </Text>
+                            </NavLink>
+                            {/* Usamos usuarioActual */}
+                            {usuarioActual?.tipo === "psicologo" && (
+                                <NavLink to={`/psicologo/${usuarioActual.id}`} onClick={onClose}>
                                     <Text fontSize="20px" _hover={{ color: "blue.50" }} transition="color 0.2s">
                                         Mi Perfil
                                     </Text>
                                 </NavLink>
                             )}
-                            {!usuario ? (
+                            {/* Usamos usuarioActual */}
+                            {!usuarioActual ? (
                                 <>
                                     <NavLink to="login" onClick={onClose}>
                                         <Text fontSize="20px" _hover={{ color: "blue.50" }}>
