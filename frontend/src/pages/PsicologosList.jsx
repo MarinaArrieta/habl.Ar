@@ -126,7 +126,7 @@ export default function PsicologosList() {
                                     _hover={{ bg: 'primary.700', boxShadow: 'md' }}
                                     as="a"
                                     href={`mailto:${psicologo.email}`}
-                                    isExternal
+                                    /* isExternal */
                                     size="md"
                                     borderRadius="lg"
                                     fontWeight="bold"

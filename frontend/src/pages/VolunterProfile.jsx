@@ -72,7 +72,7 @@ export default function VolunterProfile() {
     } finally {
       setLoading(false);
     }
-  }, [id, loggedInUser, navigate, toast]); // Dependencias para useCallback
+  }, [id, loggedInUser, navigate, toast]);
 
 
   useEffect(() => {
