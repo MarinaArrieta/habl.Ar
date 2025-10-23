@@ -3,11 +3,9 @@ import { UserProvider } from "./context/UserContext";
 
 function App() {
   return (
-
     <UserProvider>
       <AppLayout />
     </UserProvider>
-
   );
 }
 

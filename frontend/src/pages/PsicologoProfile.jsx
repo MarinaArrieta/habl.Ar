@@ -40,132 +40,42 @@ export default function PsicologoProfile() {
     const [saving, setSaving] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    /* const fetchUserData = useCallback(async () => {
-
-        if (usuarioContext === null || usuarioContext === undefined) {
-            setLoading(false);
-            return;
-        }
-        if (usuarioContext.id !== parseInt(id)) {
-            setLoading(false);
-            toast({ title: "Acceso Denegado", description: "No puedes ver este perfil.", status: "error" });
-            navigate('/');
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            const res = await getUsuario(id);
-            setUsuarioData(res.data);
-            const { contrasena, ...editableData } = res.data;
-            setFormData({ ...editableData, contrasena: "" });
-
-        } catch (err) {
-            toast({
-                title: "Error",
-                description: "No se pudo cargar el perfil.",
-                status: "error",
-            });
-        } finally {
-            setLoading(false);
-        }
-    }, [id, usuarioContext, navigate, toast]); */
-    /* const fetchUserData = useCallback(async () => {
-        setLoading(true);
-        const userIdFromUrl = parseInt(id, 10);
-
-        // USANDO usuarioContext
-        if (!usuarioContext || usuarioContext.id !== userIdFromUrl) {
-            // USANDO usuarioContext
-            if (usuarioContext && usuarioContext.id !== userIdFromUrl) {
-                toast({ title: "Acceso Denegado", description: "No puedes ver este perfil.", status: "error" });
-                navigate('/');
-            }
-            // Aseguramos que loading termine antes de retornar.
-            setLoading(false);
-            setUsuarioData(null);
-            return;
-        }
-
-        try {
-            const res = await getUsuario(id);
-            setUsuarioData(res.data);
-            const { contrasena, ...editableData } = res.data;
-            setFormData({ ...editableData, contrasena: "" });
-        } catch (err) {
-            console.error("Error al cargar datos:", err);
-            toast({
-                title: "Error",
-                description: "No se pudo cargar el perfil.",
-                status: "error",
-            });
-            setUsuarioData(null);
-        } finally {
-            // Aseguramos que el estado de carga siempre termine después del intento de fetch.
-            setLoading(false);
-        }
-        // USANDO usuarioContext EN DEPENDENCIAS
-    }, [id, usuarioContext, navigate, toast]); */
     const fetchUserData = useCallback(async () => {
         setLoading(true);
         const userIdFromUrl = parseInt(id, 10);
 
-        // 🛑 QUITAR ESTE BLOQUE:
-        /*
-        if (!usuarioContext || usuarioContext.id !== userIdFromUrl) {
-            // ... (Lógica de Acceso Denegado / Redirección)
-            setLoading(false);
-            setUsuarioData(null); 
-            return;
-        }
-        */
-
         try {
-            // 🔑 PRIMERO: Intenta obtener los datos del usuario.
-            // Asumimos que getUsuario usa el token para verificar la identidad/autorización.
             const res = await getUsuario(id);
             const fetchedData = res.data;
 
-            // 🔑 SEGUNDO: Validar si el perfil cargado coincide con el usuario logueado.
-            // Si el usuario logueado no es el dueño del perfil, redirigir.
             if (usuarioContext && usuarioContext.id !== fetchedData.id) {
                 toast({ title: "Acceso Denegado", description: "No tienes permiso para ver este perfil.", status: "error" });
                 navigate('/');
-                setUsuarioData(null); // No mostrar datos
-                return; // Termina la función aquí
+                setUsuarioData(null);
+                return;
             }
 
-            // 💡 Si llegamos aquí, el usuario logueado es el dueño del perfil.
             setUsuarioData(fetchedData);
             const { contrasena, ...editableData } = fetchedData;
             setFormData({ ...editableData, contrasena: "" });
 
         } catch (err) {
             console.error("Error al cargar datos:", err);
-            // Si el backend devuelve 404/401/403, caemos aquí.
             toast({
                 title: "Error",
                 description: err.response?.data?.error || "No se pudo cargar el perfil o acceso no autorizado.",
                 status: "error",
             });
-            setUsuarioData(null); // Esto dispara el mensaje "Perfil no encontrado..."
+            setUsuarioData(null);
         } finally {
-            setLoading(false); // Siempre termina la carga
+            setLoading(false);
         }
     }, [id, usuarioContext, navigate, toast]);
 
-
-    /* useEffect(() => {
-        fetchUserData();
-    }, [fetchUserData]); */
     useEffect(() => {
-        // 🚀 SOLUCIÓN: Llama a fetchUserData directamente.
-        // La lógica de `usuarioContext` para permitir o denegar el acceso ya está dentro de fetchUserData.
         fetchUserData();
     }, [fetchUserData]);
 
-    // Manejador de cambios del formulario
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -178,12 +88,11 @@ export default function PsicologoProfile() {
         e.preventDefault();
         setSaving(true);
 
-        // Crear un objeto que solo contenga los campos con cambios para enviar
         const dataToUpdate = {};
         let hasChanges = false;
 
         for (const key in formData) {
-            if (key === 'id' || key === 'tipo' || key === 'email') continue; // Campos no editables aquí
+            if (key === 'id' || key === 'tipo' || key === 'email') continue;
 
             const currentValue = formData[key] || "";
             const originalValue = usuarioData[key] || "";
@@ -225,36 +134,12 @@ export default function PsicologoProfile() {
         }
     };
 
-    // FUNCIÓN Darse de Baja
-    /* const handleDelete = async () => {
-        if (window.confirm("¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es irreversible.")) {
-            setSaving(true);
-            try {
-                await deleteUsuario(id);
-                localStorage.removeItem("token");
-                localStorage.removeItem("usuario");
-                setUsuario(null);
-
-                toast({ title: "Cuenta Eliminada", description: "Tu cuenta ha sido eliminada con éxito.", status: "info" });
-                navigate('/');
-
-            } catch (error) {
-                toast({
-                    title: "Error",
-                    description: error.response?.data?.error || "Error al eliminar la cuenta.",
-                    status: "error",
-                });
-                setSaving(false);
-            }
-        }
-    }; */
     const handleDelete = async () => {
-        onClose(); // Cerrar el modal antes de proceder
+        onClose();
 
         setSaving(true);
         try {
             await deleteUsuario(id);
-            // Limpieza de almacenamiento y contexto
             localStorage.removeItem("token");
             localStorage.removeItem("usuario");
             setUsuario(null);
@@ -272,16 +157,6 @@ export default function PsicologoProfile() {
         }
     };
 
-    /* if (loading || usuarioContext === undefined) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" h="60vh">
-                <Spinner size="xl" />
-            </Box>
-        );
-    }
-
-    if (!usuarioData) return <Heading size="lg" p={5}>Perfil no encontrado</Heading>; */
-    // Renderizado de carga
     if (loading) {
         return (
             <Center h="60vh">
@@ -290,7 +165,6 @@ export default function PsicologoProfile() {
         );
     }
 
-    // Si loading es false y no hay datos, mostramos el error (incluye no autorizado por la lógica de fetchUserData)
     if (!usuarioData) return (
         <Center h="60vh">
             <Heading size="lg" p={5} color="red.500">
@@ -306,7 +180,6 @@ export default function PsicologoProfile() {
             </Heading>
             <Text color="gray.500" mb={6}>ID: {usuarioData.id} | Tipo: {usuarioData.tipo}</Text>
 
-            {/* Botones de acción principal */}
             <VStack spacing={3} align="flex-start" mb={6}>
                 <Button
                     onClick={() => setIsEditing(!isEditing)}
@@ -317,20 +190,10 @@ export default function PsicologoProfile() {
                     {isEditing ? "Cancelar Edición" : "Editar Perfil"}
                 </Button>
 
-                {/* {!isEditing && (
-                    <Button
-                        colorScheme="red"
-                        onClick={handleDelete}
-                        isLoading={saving}
-                        width="200px"
-                    >
-                        Darse de Baja
-                    </Button>
-                )} */}
                 {!isEditing && (
                     <Button
                         colorScheme="red"
-                        onClick={onOpen} // Abre el modal en lugar de window.confirm
+                        onClick={onOpen}
                         isLoading={saving}
                         width="200px"
                     >
@@ -338,32 +201,8 @@ export default function PsicologoProfile() {
                     </Button>
                 )}
             </VStack>
-            {/* ESTADO DE APROBACIÓN - Muestra el estado actual del proceso de validación */}
-            {/* <Box
-                mb={6}
-                p={4}
-                borderRadius="lg"
-                shadow="sm"
-                // Lógica para asignar colores según el estado
-                bg={usuarioData.estado_aprobacion === 'aprobado' ? 'green.50' : usuarioData.estado_aprobacion === 'rechazado' ? 'red.50' : 'yellow.50'}
-                borderWidth={1}
-                borderColor={usuarioData.estado_aprobacion === 'aprobado' ? 'green.200' : usuarioData.estado_aprobacion === 'rechazado' ? 'red.200' : 'yellow.200'}
-            >
-                <Text as="b" color="gray.700" fontSize="lg">
-                    Estado de Aprobación:
-                </Text>
-                <Text
-                    display="inline"
-                    ml={2}
-                    color={usuarioData.estado_aprobacion === 'aprobado' ? 'green.900' : usuarioData.estado_aprobacion === 'rechazado' ? 'red.900' : 'yellow.900'}
-                    fontWeight="bold"
-                    textTransform="uppercase"
-                >
-                    {usuarioData.estado_aprobacion || "PENDIENTE"}
-                </Text>
-            </Box> */}
+            
             {isEditing ? (
-                // EDICIÓN (FORMULARIO)
                 <VStack as="form" onSubmit={handleSubmit} spacing={4} align="stretch">
                     <Divider />
                     <Heading size="md" pt={4}>Formulario de Edición</Heading>

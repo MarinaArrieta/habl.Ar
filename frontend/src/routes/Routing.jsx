@@ -38,11 +38,11 @@ const GlobalLoadingSpinner = () => (
 // Componente para proteger rutas de Admin
 const AdminRoute = ({ children }) => {
     // 🔑 Usamos el contexto para acceder al usuario y al estado de carga
-    const { usuarioActual, authReady } = useUser(); 
+    const { usuarioActual, authReady } = useUser();
 
     if (!authReady) {
         // Muestra el spinner mientras el contexto revisa localStorage
-        return <GlobalLoadingSpinner />; 
+        return <GlobalLoadingSpinner />;
     }
 
     // Una vez listo el contexto, verifica el rol
@@ -54,17 +54,13 @@ const AdminRoute = ({ children }) => {
 
 // Componente para proteger rutas generales (psicólogo/voluntario)
 const ProtectedRoute = ({ children }) => {
-    // 🔑 Usamos el contexto para acceder al usuario y al estado de carga
-    const { usuarioActual, authReady } = useUser(); 
+    const { usuarioActual, authReady } = useUser();
 
     if (!authReady) {
-        // Muestra el spinner mientras el contexto revisa localStorage
         return <GlobalLoadingSpinner />;
     }
 
-    // Una vez listo el contexto, verifica si es un tipo de usuario permitido
-    // Permitimos psicólogo o voluntario (asumiendo que "comun" es el no permitido)
-    if (!usuarioActual || usuarioActual.tipo === "comun") { 
+    if (!usuarioActual || usuarioActual.tipo === "comun") {
         return <Navigate to="/login" replace />;
     }
     return children;
@@ -95,7 +91,7 @@ export default function Routing() {
             <Route
                 path="/"
                 element={
-                    <AdminRoute> 
+                    <AdminRoute>
                         <AdminLayout />
                     </AdminRoute>
                 }

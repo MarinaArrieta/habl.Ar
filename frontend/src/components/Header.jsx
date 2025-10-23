@@ -22,7 +22,6 @@ import { UserContext } from "../context/UserContext";
 export default function Navbar() {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    // 🚨 CORRECCIÓN: Ahora usamos 'usuarioActual' que es el nombre correcto del valor en el contexto.
     const { usuarioActual } = useContext(UserContext);
 
     return (

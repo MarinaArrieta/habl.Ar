@@ -57,7 +57,7 @@ export default function PsicologosList() {
                 Encuentra tu Profesional
             </Heading>
             <Text textAlign="center" color="violet.50" fontSize="lg">
-                Nuestros psicólogos colaboradores están aquí para ayudarte. Todos los profesionales han sido verificados.
+                Nuestros psicólogos están aquí para ayudarte. Elige el tuyo.
             </Text>
 
             {psicologos.length === 0 ? (
