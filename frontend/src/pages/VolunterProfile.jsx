@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -39,55 +39,61 @@ export default function VolunterProfile() {
   const [error, setError] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const fetchVoluntario = useCallback(async () => {
+    setLoading(true);
 
-  const fetchVoluntario = async () => {
     try {
-      setLoading(true);
       const res = await getUsuario(id);
-      setVoluntario(res.data);
+      const fetchedData = res.data;
+      const profileIdFromUrl = id.toString();
+      const loggedInId = loggedInUser?.id?.toString();
+
+      if (loggedInUser && loggedInId !== profileIdFromUrl && loggedInUser.tipo !== 'admin') {
+        toast({ title: "Acceso Denegado", description: "No tienes permiso para ver este perfil.", status: "error" });
+        navigate('/');
+        setError("Acceso no autorizado.");
+        setVoluntario(null);
+        return;
+      }
+
+      setVoluntario(fetchedData);
       setFormData({
-        nombre: res.data.nombre || "",
-        apellido: res.data.apellido || "",
-        email: res.data.email || "",
-        fecha_nacimiento: res.data.fecha_nacimiento ? res.data.fecha_nacimiento.split('T')[0] : "", // Formato YYYY-MM-DD
+        nombre: fetchedData.nombre || "",
+        apellido: fetchedData.apellido || "",
+        email: fetchedData.email || "",
+        // Formato YYYY-MM-DD
+        fecha_nacimiento: fetchedData.fecha_nacimiento ? fetchedData.fecha_nacimiento.split('T')[0] : "",
         contrasena: "",
       });
       setError(null);
     } catch (err) {
       console.error("Error al obtener datos del voluntario:", err);
-      setError("No se pudo cargar el perfil o no tienes permiso.");
+      setError("No se pudo cargar el perfil o no tienes permiso para acceder a él.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, loggedInUser, navigate, toast]); // Dependencias para useCallback
+
 
   useEffect(() => {
-    // Verificar si el usuario logueado tiene permiso
-    if (loggedInUser && (loggedInUser.id.toString() === id || loggedInUser.tipo === 'admin')) {
-      fetchVoluntario();
-    } else if (loggedInUser) {
-        // Si el usuario no tiene permiso, lo enviamos al home
-        toast({ title: "Acceso Denegado", description: "No puedes ver este perfil.", status: "error" });
-        navigate("/");
-    }
-  }, [id, loggedInUser, navigate, toast]);
+    fetchVoluntario();
+  }, [id, fetchVoluntario]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     const dataToSend = { ...formData };
-    
-    // Si la contraseña está vacía, no la enviamos para no actualizarla a un hash vacío
+
     if (!dataToSend.contrasena) {
-        delete dataToSend.contrasena;
+      delete dataToSend.contrasena;
     }
-    // Aseguramos que el curso_aprobado no se puede cambiar desde aquí
+
     delete dataToSend.curso_aprobado;
 
     try {
@@ -96,10 +102,10 @@ export default function VolunterProfile() {
       setIsEditing(false);
       fetchVoluntario();
     } catch (err) {
-      toast({ 
-        title: "Error al actualizar", 
-        description: err.response?.data?.error || "Intenta de nuevo.", 
-        status: "error" 
+      toast({
+        title: "Error al actualizar",
+        description: err.response?.data?.error || "Intenta de nuevo.",
+        status: "error"
       });
     } finally {
       setLoading(false);
@@ -110,24 +116,23 @@ export default function VolunterProfile() {
     onClose(); // Cerrar modal
 
     if (loggedInUser.id.toString() !== id) {
-        return toast({ title: "Acceso denegado", description: "Solo puedes eliminar tu propia cuenta.", status: "error" });
+      return toast({ title: "Acceso denegado", description: "Solo puedes eliminar tu propia cuenta.", status: "error" });
     }
 
     try {
       await deleteUsuario(id);
-      
-      // Limpiar sesión y contexto
+
       localStorage.removeItem("token");
       localStorage.removeItem("usuario");
       setUsuario(null);
-      
+
       toast({ title: "Cuenta eliminada", description: "Tu cuenta de voluntario ha sido dada de baja con éxito.", status: "info" });
       navigate("/");
     } catch (err) {
-      toast({ 
-        title: "Error al dar de baja", 
-        description: err.response?.data?.error || "Intenta de nuevo.", 
-        status: "error" 
+      toast({
+        title: "Error al dar de baja",
+        description: err.response?.data?.error || "Intenta de nuevo.",
+        status: "error"
       });
     }
   };
@@ -141,23 +146,26 @@ export default function VolunterProfile() {
     );
   }
 
-  if (error) {
+  if (error || !voluntario) {
     return (
       <Alert status="error" maxW="400px" mx="auto" mt={10}>
         <AlertIcon />
-        {error}
+        {error || "Perfil no encontrado o no tienes acceso."}
       </Alert>
     );
   }
+
+  const profileId = id.toString();
+  const loggedInId = loggedInUser?.id?.toString();
+
+  const canEditOrView = loggedInUser && (loggedInId === profileId || loggedInUser.tipo === 'admin');
 
   return (
     <Box maxW="600px" mx="auto" p={6}>
       <Heading as="h1" size="xl" mb={6} textAlign="center">
         Perfil de Voluntario
       </Heading>
-
       <Box p={6} borderWidth={1} borderRadius="lg" bg="white">
-        {/* Vista de Lectura */}
         {!isEditing ? (
           <Stack spacing={4}>
             <Text>
@@ -184,7 +192,6 @@ export default function VolunterProfile() {
             </Button>
           </Stack>
         ) : (
-          /* Vista de Edición */
           <form onSubmit={handleUpdate}>
             <Stack spacing={4}>
               <FormControl isRequired>
@@ -203,19 +210,16 @@ export default function VolunterProfile() {
                 <FormLabel>Fecha de Nacimiento</FormLabel>
                 <Input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} isReadOnly />
                 <Text fontSize="sm" color="gray.500">
-                   *Este campo no se puede modificar.*
+                  *Este campo no se puede modificar.*
                 </Text>
               </FormControl>
-              
               <FormControl>
                 <FormLabel>Nueva Contraseña (Dejar vacío para no cambiar)</FormLabel>
                 <Input type="password" name="contrasena" value={formData.contrasena} onChange={handleChange} placeholder="******" />
               </FormControl>
-              
               <Checkbox isChecked={voluntario.curso_aprobado} isReadOnly colorScheme="green">
-                 Curso de Capacitación Aprobado
+                Curso de Capacitación Aprobado
               </Checkbox>
-
               <Button type="submit" colorScheme="green" isLoading={loading}>
                 Guardar Cambios
               </Button>
@@ -226,8 +230,6 @@ export default function VolunterProfile() {
           </form>
         )}
       </Box>
-
-      {/* Modal de Confirmación para Eliminar Cuenta */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
