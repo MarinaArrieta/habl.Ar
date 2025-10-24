@@ -57,7 +57,7 @@ router.put(
     upload.single('foto_perfil'),
     updateUsuarioController
 );
-router.put("/:id", verificarToken, updateUsuarioController);
+//router.put("/:id", verificarToken, updateUsuarioController);
 router.delete("/:id", verificarToken, deleteUsuarioController);
 router.put('/approve-psicologo/:id', verificarToken, adminAuth, aprobarPsicologoController);
 

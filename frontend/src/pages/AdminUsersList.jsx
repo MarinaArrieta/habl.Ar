@@ -201,7 +201,7 @@ export default function AdminUsersList() {
     };
 
     return (
-        <Box p={6} bg="gray.50" minH="100vh">
+        <Box bg="gray.50" minH="100vh">
             <Heading size="xl" mb={6} color="teal.700">Gestión de Usuarios</Heading>
             <Text mb={6} color="gray.600">Lista de usuarios registrados que requieren gestión (Aprobación de psicólogos o promoción a administrador).</Text>
 
@@ -236,8 +236,7 @@ export default function AdminUsersList() {
                                             </Badge>
                                         </Td>
                                         <Td>
-                                            {/* Insignia de estado de aprobación */}
-                                            {user.estado_aprobacion && (
+                                            {user.estado_aprobacion === 'aprobado' && (
                                                 <Badge colorScheme={getApprovalColor(user.estado_aprobacion)}>
                                                     {user.estado_aprobacion}
                                                 </Badge>
@@ -260,14 +259,14 @@ export default function AdminUsersList() {
                                                 )}
 
                                                 {/* 2. Botón de PROMOCIÓN (Siempre disponible para usuarios no-admin) */}
-                                                <Button
+                                                {/* <Button
                                                     size="sm"
                                                     colorScheme="purple"
                                                     leftIcon={<FaUserPlus />}
                                                     onClick={() => handlePromote(user.id, user.nombre, user.apellido)}
                                                 >
                                                     Promover a Admin
-                                                </Button>
+                                                </Button> */}
                                             </VStack>
                                         </Td>
                                     </Tr>

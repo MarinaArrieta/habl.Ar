@@ -83,11 +83,9 @@ export default function Routing() {
             <Route path="/psicologos" element={<PsicologosList />} />
             <Route path="/techniques/:slug" element={<TecnicasPorCategoria />} />
 
-            {/* Rutas Protegidas (ahora esperan authReady) */}
             <Route path="/psicologo/:id" element={<ProtectedRoute><PsicologoProfile /></ProtectedRoute>} />
-            <Route path="/voluntario-perfil/:id" element={<ProtectedRoute><VolunterProfile /></ProtectedRoute>} />
+            <Route path="/voluntario/:id" element={<ProtectedRoute><VolunterProfile /></ProtectedRoute>} />
 
-            {/* Rutas de Admin */}
             <Route
                 path="/"
                 element={

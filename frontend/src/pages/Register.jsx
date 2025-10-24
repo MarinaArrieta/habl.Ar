@@ -345,7 +345,6 @@ export default function Register() {
                             </FormControl>
                         </Box>
                     )}
-                    {/* --- */}
                     {/* VOLUNTARIOS */}
                     {formData.tipo === "voluntario" && (
                         <Box mt={4}>

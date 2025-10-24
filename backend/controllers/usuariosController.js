@@ -277,6 +277,7 @@ export const updateUsuarioController = async (req, res) => {
 
         // Obtener el nombre de archivo de la foto (si se subió, Multer lo pone en req.file)
         const fotoUrl = req.file ? req.file.filename : null;
+        console.log("📸 Archivo recibido:", req.file);
 
         if (req.user.id.toString() !== id && req.user.tipo !== 'admin') {
             return res.status(403).json({ error: "No tienes permiso para modificar este perfil." });
