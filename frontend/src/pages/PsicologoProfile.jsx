@@ -20,12 +20,16 @@ import {
     ModalBody,
     useDisclosure,
     Center,
+    Image,
+    HStack,
     Link as ChakraLink,
 } from "@chakra-ui/react";
 import { getUsuario, updateUsuario, deleteUsuario } from "../services/api";
 import { UserContext } from "../context/UserContext";
 
-const DOCUMENTS_BASE_URL = "http://localhost:3000/uploads/";
+const API_BASE_URL = "http://localhost:3000";
+/* const DOCUMENTS_BASE_URL = "http://localhost:3000/uploads/"; */
+const DOCUMENTS_BASE_URL = `${API_BASE_URL}/uploads/`;
 
 export default function PsicologoProfile() {
     const { id } = useParams();
@@ -39,6 +43,13 @@ export default function PsicologoProfile() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [fotoFile, setFotoFile] = useState(null);
+
+    // Función auxiliar para construir la URL de la foto de perfil
+    const getFotoUrl = (fotoFilename) => {
+        if (!fotoFilename) return null;
+        return `${DOCUMENTS_BASE_URL}${fotoFilename}`;
+    }
 
     const fetchUserData = useCallback(async () => {
         setLoading(true);
@@ -84,48 +95,88 @@ export default function PsicologoProfile() {
         });
     };
 
+    const handleFileChange = (e) => {
+        // Maneja la selección del archivo de la foto de perfil
+        setFotoFile(e.target.files[0]); // <--- NUEVA FUNCIÓN
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
 
-        const dataToUpdate = {};
+        let payload = {}; // Objeto JSON para campos de texto
         let hasChanges = false;
 
+        // 1. Recolectar campos de texto modificados
         for (const key in formData) {
-            if (key === 'id' || key === 'tipo' || key === 'email') continue;
+            if (key === 'id' || key === 'tipo' || key === 'email' || key === 'fotoUrl' || key === 'foto_titulo' || key === 'certificado') continue;
 
             const currentValue = formData[key] || "";
             const originalValue = usuarioData[key] || "";
 
             if (key === 'contrasena') {
                 if (currentValue !== "") {
-                    dataToUpdate[key] = currentValue;
+                    payload[key] = currentValue;
                     hasChanges = true;
                 }
             } else if (currentValue !== originalValue) {
-                dataToUpdate[key] = currentValue;
+                payload[key] = currentValue;
                 hasChanges = true;
             }
         }
 
+        // 2. Verificar si hay cambios en el archivo de la foto
+        if (fotoFile) {
+            hasChanges = true;
+        }
+
+        // 3. CASO BASE: Sin cambios
         if (!hasChanges) {
-            toast({ title: "Sin cambios", description: "No has modificado ningún campo.", status: "info" });
+            toast({ title: "Sin cambios", description: "No has modificado ningún campo ni subido una nueva foto.", status: "info" });
             setIsEditing(false);
             setSaving(false);
             return;
         }
 
+        // 4. ESTRATEGIA DE ENVÍO: Usar FormData si hay archivo
+        let requestData;
+        if (fotoFile) {
+            // **CLAVE:** Crear FormData para enviar el archivo
+            const formDataToSubmit = new FormData();
+
+            // Adjuntar el archivo. 'foto_perfil' debe ser el nombre que tu backend espera.
+            formDataToSubmit.append('foto_perfil', fotoFile);
+
+            // Adjuntar los campos de texto modificados al FormData también
+            for (const key in payload) {
+                formDataToSubmit.append(key, payload[key]);
+            }
+
+            requestData = formDataToSubmit; // Enviamos FormData
+        } else {
+            requestData = payload; // Enviamos el objeto JSON simple
+        }
+
         try {
-            const res = await updateUsuario(id, dataToUpdate);
-            setUsuario(prev => ({ ...prev, nombre: res.data.nombre, apellido: res.data.apellido }));
+            // updateUsuario debe poder recibir tanto FormData como un objeto JSON
+            const res = await updateUsuario(id, requestData);
+
+            // Actualizar el contexto del usuario con la nueva información
+            setUsuario(prev => ({
+                ...prev,
+                nombre: res.data.nombre,
+                apellido: res.data.apellido,
+                fotoUrl: res.data.fotoUrl // Asegúrate de que el backend devuelve la nueva URL de la foto
+            }));
 
             toast({ title: "Perfil actualizado 🎉", status: "success" });
             setIsEditing(false);
+            setFotoFile(null); // Limpiar el estado del archivo
 
         } catch (error) {
             toast({
                 title: "Error al guardar",
-                description: error.response?.data?.error || "Error al actualizar.",
+                description: error.response?.data?.error || "Error al actualizar. Verifica el formato de datos.",
                 status: "error",
             });
         } finally {
@@ -173,39 +224,63 @@ export default function PsicologoProfile() {
         </Center>
     );
 
+    const currentFotoUrl = getFotoUrl(usuarioData.fotoUrl);
+
     return (
         <Box maxW="800px" mx="auto" mt={10} p={5} borderWidth={1} borderRadius="lg" shadow="md">
-            <Heading mb={4} size="xl">
-                Perfil de Psicólogo: {usuarioData.nombre} {usuarioData.apellido}
-            </Heading>
-            <Text color="gray.500" mb={6}>ID: {usuarioData.id} | Tipo: {usuarioData.tipo}</Text>
+            <HStack justifyContent="space-between" alignItems="flex-start" mb={4}>
+                <VStack align="flex-start" spacing={1}>
+                    <Heading size="xl" color="teal.600">
+                        {usuarioData.nombre} {usuarioData.apellido}
+                    </Heading>
+                    <Text color="gray.500">ID: {usuarioData.id} | Tipo: {usuarioData.tipo}</Text>
+                    <Text color="gray.600" fontSize="lg">{usuarioData.email}</Text>
+                </VStack>
 
-            <VStack spacing={3} align="flex-start" mb={6}>
+                <Box textAlign="center">
+                    <Image
+                        borderRadius="full"
+                        boxSize="150px"
+                        objectFit="cover"
+                        src={currentFotoUrl || 'https://placehold.co/150x150/EEEEEE/555555?text=Sin+Foto'}
+                        alt={`Foto de perfil de ${usuarioData.nombre}`}
+                        fallbackSrc='https://placehold.co/150x150/EEEEEE/555555?text=Sin+Foto'
+                        shadow="lg"
+                    />
+                    {isEditing && <Text mt={2} fontSize="sm" color="gray.500">Subir nueva foto abajo</Text>}
+                </Box>
+            </HStack>
+
+            {/* REEMPLAZAR <VStack spacing={3} align="flex-start" mb={6}> por la nueva sección de botones */}
+            <HStack spacing={4} pt={2}>
                 <Button
                     onClick={() => setIsEditing(!isEditing)}
                     colorScheme={isEditing ? "gray" : "teal"}
                     isLoading={saving}
-                    width="200px"
+                    width="180px"
                 >
                     {isEditing ? "Cancelar Edición" : "Editar Perfil"}
                 </Button>
+                {/* ... resto de botones ... */}
+            </HStack>
 
-                {!isEditing && (
-                    <Button
-                        colorScheme="red"
-                        onClick={onOpen}
-                        isLoading={saving}
-                        width="200px"
-                    >
-                        Darse de Baja
-                    </Button>
-                )}
-            </VStack>
-            
             {isEditing ? (
                 <VStack as="form" onSubmit={handleSubmit} spacing={4} align="stretch">
                     <Divider />
                     <Heading size="md" pt={4}>Formulario de Edición</Heading>
+
+                    {/* NUEVO CAMPO DE FOTO DE PERFIL */}
+                    <FormControl>
+                        <FormLabel>Foto de Perfil</FormLabel>
+                        <Input
+                            type="file"
+                            name="foto_perfil"
+                            accept="image/*"
+                            onChange={handleFileChange} // <--- Usamos el nuevo manejador
+                            p={1}
+                        />
+                        {fotoFile && <Text color="teal.500" fontSize="sm" mt={1}>Archivo seleccionado: {fotoFile.name}</Text>}
+                    </FormControl>
 
                     <FormControl>
                         <FormLabel>Nombre</FormLabel>
@@ -262,7 +337,6 @@ export default function PsicologoProfile() {
                     </Button>
                 </VStack>
             ) : (
-                // MODO VISUALIZACIÓN
                 <VStack spacing={3} align="flex-start" divider={<Divider />}>
                     <Text>
                         <Text as="b">Email:</Text> {usuarioData.email}
@@ -276,8 +350,6 @@ export default function PsicologoProfile() {
                     <Text>
                         <Text as="b">Título:</Text> {usuarioData.titulo || "N/A"}
                     </Text>
-
-                    {/* CAMPOS DE DOCUMENTOS */}
                     <Text>
                         <Text as="b">Foto del Título:</Text>
                         {usuarioData.foto_titulo ? (
@@ -296,7 +368,6 @@ export default function PsicologoProfile() {
                     </Text>
                 </VStack>
             )}
-            {/* Modal de Confirmación (Reemplazo de window.confirm) */}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>

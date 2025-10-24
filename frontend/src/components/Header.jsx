@@ -75,18 +75,6 @@ export default function Navbar() {
                         Técnicas
                     </Text>
                 </NavLink>
-                {/* Usamos usuarioActual */}
-                {usuarioActual?.tipo === "psicologo" && (
-                    <NavLink to={`/psicologo/${usuarioActual.id}`}>
-                        <Text
-                            fontSize="18px"
-                            color="primary.500"
-                            _hover={{ color: "blue.50" }}
-                        >
-                            Mi Perfil
-                        </Text>
-                    </NavLink>
-                )}
                 <NavLink to="sobre-nosotros" onClick={onClose}>
                     <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }}>Sobre Nosotros</Text>
                 </NavLink>
@@ -104,6 +92,18 @@ export default function Navbar() {
                 {usuarioActual?.tipo === "admin" && (
                     <NavLink to="admin-techniques">
                         <Text fontSize="18px" color="primary.500" _hover={{ color: "blue.50" }} fontWeight="bold">Panel</Text>
+                    </NavLink>
+                )}
+                {/* Usamos usuarioActual */}
+                {usuarioActual?.tipo === "psicologo" && (
+                    <NavLink to={`/psicologo/${usuarioActual.id}`}>
+                        <Text
+                            fontSize="18px"
+                            color="primary.500"
+                            _hover={{ color: "blue.50" }}
+                        >
+                            Mi Perfil
+                        </Text>
                     </NavLink>
                 )}
                 {/* Usamos usuarioActual */}

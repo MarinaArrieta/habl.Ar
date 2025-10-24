@@ -51,9 +51,14 @@ router.get("/", verificarToken, adminAuth, getUsuariosController);
 
 // Obtener, Actualizar, Eliminar (Rutas para el perfil propio o gestionadas por Admin)
 router.get("/:id", verificarToken, getUsuarioController);
+router.put(
+    "/:id",
+    verificarToken,
+    upload.single('foto_perfil'),
+    updateUsuarioController
+);
 router.put("/:id", verificarToken, updateUsuarioController);
 router.delete("/:id", verificarToken, deleteUsuarioController);
-/* router.patch('/:id/aprobar', verificarToken, aprobarPsicologoController); */
 router.put('/approve-psicologo/:id', verificarToken, adminAuth, aprobarPsicologoController);
 
 
