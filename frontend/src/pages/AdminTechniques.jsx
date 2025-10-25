@@ -129,7 +129,7 @@ export default function AdminTechniques() {
     };
 
     return (
-        <VStack w={{ base: '80%', xl: '60%' }}>
+        <VStack w={{ base: '80%', xl: '60%' }} paddingTop="0">
             <VStack spacing={3} mb={5} align="start">
                 <Input placeholder="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
                 <Select placeholder="Tipo de técnica" value={tipo} onChange={(e) => setTipo(e.target.value)}>

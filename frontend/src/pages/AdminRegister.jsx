@@ -133,7 +133,7 @@ export default function AdminRegister() {
   };
 
   return (
-    <Box p={5}>
+    <Box paddingTop="0">
       <Heading mb={5}>Registro y Promoción de Administradores</Heading>
       <Text mb={4}>Aquí puedes ver **solo** los usuarios que actualmente tienen el rol de **administrador**.</Text>
 

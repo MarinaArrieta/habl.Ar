@@ -12,7 +12,7 @@ export default function AdminLayout() {
                     </Heading>
                 </Box>
                 <AdminMenu />
-                <Box w={{ base: '95%', md: '80%', xl: '60%' }} p={0} pt={4}>
+                <Box w={{ base: '95%', md: '80%', xl: '60%' }} p={0} pt={4} paddingTop="0">
                     <Outlet />
                 </Box>
             </VStack>

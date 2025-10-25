@@ -220,73 +220,78 @@ export default function AdminUsersList() {
     };
 
     return (
-        <Box bg="#F0DCC9" minH="100vh" p={4}>
-            <Heading size="lg" mb={4} color="primary.800">Gestión de Usuarios</Heading>
-            <Text mb={6} color="gray.600">Aprueba psicólogos y elimina usuarios no-administradores.</Text>
+        <VStack
+            w="100%"
+            display="flex"
+            justifyContent="center"
+            bg="#F0DCC9"
+            paddingTop="0"
+        >
+            <Heading fontSize="1.3rem" color="primary.800" mb={3}>Aprobación de psicólogos y eliminación de usuarios no-administradores</Heading>
+            {
+                loading ? (
+                    <HStack justifyContent="center" py={10}>
+                        <Spinner size="xl" color="teal.500" />
+                        <Text ml={3} fontSize="lg">Cargando lista de usuarios...</Text>
+                    </HStack>
+                ) : (
+                    <Box overflowX="auto" shadow="lg" borderRadius="lg" w="100%">
+                        <Table variant="simple" size="sm">
+                            <Thead>
+                                <Tr bg="violet.200" >
+                                    <Th color="#F0DCC9">ID</Th>
+                                    <Th color="#F0DCC9">Nombre</Th>
+                                    <Th color="#F0DCC9">Email</Th>
+                                    <Th color="#F0DCC9">Tipo</Th>
+                                    <Th color="#F0DCC9">Aprobación</Th>
+                                    <Th color="#F0DCC9">Acciones</Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody bg="violet.100">
+                                {usuarios.length > 0 ? (
+                                    usuarios.map((user) => (
+                                        <Tr key={user.id} _hover={{ bg: "gray.50" }}>
+                                            {/* ID y detalles del usuario */}
+                                            <Td maxW="150px" overflow="hidden" textOverflow="ellipsis" color="violet.200">{user.id}</Td>
+                                            <Td color="violet.200">{user.nombre} {user.apellido}</Td>
+                                            <Td color="violet.200">{user.email}</Td>
+                                            <Td color="violet.200">
+                                                <Badge colorScheme={getBadgeColor(user.tipo)}>
+                                                    {user.tipo}
+                                                </Badge>
+                                            </Td>
+                                            <Td color="violet.200">
+                                                <Badge colorScheme={getApprovalColor(user.estado_aprobacion)}>
+                                                    {user.estado_aprobacion || "n/a"}
+                                                </Badge>
+                                            </Td>
+                                            <Td color="violet.200">
+                                                <VStack spacing={2} align="start">
 
-            {loading ? (
-                <HStack justifyContent="center" py={10}>
-                    <Spinner size="xl" color="teal.500" />
-                    <Text ml={3} fontSize="lg">Cargando lista de usuarios...</Text>
-                </HStack>
-            ) : (
-                <Box overflowX="auto" shadow="lg" borderRadius="lg">
-                    <Table variant="simple" size="md">
-                        <Thead>
-                            <Tr bg="primary.700" >
-                                <Th color="#F0DCC9">ID</Th>
-                                <Th color="#F0DCC9">Nombre</Th>
-                                <Th color="#F0DCC9">Email</Th>
-                                <Th color="#F0DCC9">Tipo</Th>
-                                <Th color="#F0DCC9">Aprobación</Th>
-                                <Th color="#F0DCC9">Acciones</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody bg="yellow.50">
-                            {usuarios.length > 0 ? (
-                                usuarios.map((user) => (
-                                    <Tr key={user.id} _hover={{ bg: "gray.50" }}>
-                                        {/* ID y detalles del usuario */}
-                                        <Td maxW="150px" overflow="hidden" textOverflow="ellipsis">{user.id}</Td>
-                                        <Td>{user.nombre} {user.apellido}</Td>
-                                        <Td>{user.email}</Td>
-                                        <Td>
-                                            <Badge colorScheme={getBadgeColor(user.tipo)}>
-                                                {user.tipo}
-                                            </Badge>
-                                        </Td>
-                                        <Td>
-                                            <Badge colorScheme={getApprovalColor(user.estado_aprobacion)}>
-                                                {user.estado_aprobacion || "n/a"}
-                                            </Badge>
-                                        </Td>
-                                        <Td>
-                                            <VStack spacing={2} align="start">
+                                                    {/* 1. Botón de APROBACIÓN (SOLO PSICÓLOGOS PENDIENTES) */}
+                                                    {user.tipo === 'psicologo' && user.estado_aprobacion === 'pendiente' && (
+                                                        <Button
+                                                            size="sm"
+                                                            colorScheme="green"
+                                                            leftIcon={<FaCheckCircle />}
+                                                            onClick={() => handleApprove(user.id, user.nombre, user.apellido)}
+                                                        >
+                                                            Aprobar
+                                                        </Button>
+                                                    )}
 
-                                                {/* 1. Botón de APROBACIÓN (SOLO PSICÓLOGOS PENDIENTES) */}
-                                                {user.tipo === 'psicologo' && user.estado_aprobacion === 'pendiente' && (
+                                                    {/* 2. Botón de ELIMINAR (Para todos los usuarios mostrados, excepto el propio admin) */}
                                                     <Button
                                                         size="sm"
-                                                        colorScheme="green"
-                                                        leftIcon={<FaCheckCircle />}
-                                                        onClick={() => handleApprove(user.id, user.nombre, user.apellido)}
+                                                        colorScheme="red"
+                                                        leftIcon={<FaTrashAlt />}
+                                                        onClick={() => handleDelete(user.id, user.nombre, user.apellido)}
                                                     >
-                                                        Aprobar
+                                                        Eliminar
                                                     </Button>
-                                                )}
 
-                                                {/* 2. Botón de ELIMINAR (Para todos los usuarios mostrados, excepto el propio admin) */}
-                                                <Button
-                                                    size="sm"
-                                                    colorScheme="red"
-                                                    leftIcon={<FaTrashAlt />}
-                                                    onClick={() => handleDelete(user.id, user.nombre, user.apellido)}
-                                                >
-                                                    Eliminar
-                                                </Button>
-
-                                                {/* Botón de PROMOCIÓN (Comentado, se mantiene por contexto) */}
-                                                {/* <Button
+                                                    {/* Botón de PROMOCIÓN (Comentado, se mantiene por contexto) */}
+                                                    {/* <Button
                                                     size="sm"
                                                     colorScheme="purple"
                                                     leftIcon={<FaUserPlus />}
@@ -294,21 +299,22 @@ export default function AdminUsersList() {
                                                 >
                                                     Promover a Admin
                                                 </Button> */}
-                                            </VStack>
+                                                </VStack>
+                                            </Td>
+                                        </Tr>
+                                    ))
+                                ) : (
+                                    <Tr>
+                                        <Td colSpan={6} textAlign="center" py={10}>
+                                            No hay usuarios no-administradores para gestionar.
                                         </Td>
                                     </Tr>
-                                ))
-                            ) : (
-                                <Tr>
-                                    <Td colSpan={6} textAlign="center" py={10}>
-                                        No hay usuarios no-administradores para gestionar.
-                                    </Td>
-                                </Tr>
-                            )}
-                        </Tbody>
-                    </Table>
-                </Box>
-            )}
-        </Box>
+                                )}
+                            </Tbody>
+                        </Table>
+                    </Box>
+                )
+            }
+        </VStack >
     );
 }

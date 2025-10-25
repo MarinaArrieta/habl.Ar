@@ -41,9 +41,15 @@ const theme = extendTheme({
         },
         yellow: { 50: "#E9A300" },
         orange: { 50: "#DA5700" },
-        blue: { 50: "#353887" },
-        violet: { 50: "#A803A8" },
-        red: { 50: "#920B0B"},
+        blue: {
+            50: "#353887",
+        },
+        violet: {
+            50: "#A803A8",
+            100: "#c07fc0",
+            200: "#440044",
+        },
+        red: { 50: "#920B0B" },
     },
 
     components: {

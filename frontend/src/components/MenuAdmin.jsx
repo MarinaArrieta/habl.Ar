@@ -6,7 +6,7 @@ export default function AdminMenu() {
     return (
         <HStack
             w={{ base: '95%', md: '80%', xl: '60%' }}
-            mb={8}
+            mb={3}
             mt={4}
             justify="center"
             spacing={{ base: 0, md: 3 }}
