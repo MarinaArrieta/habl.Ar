@@ -413,9 +413,6 @@ export const aprobarPsicologoController = async (req, res) => {
     }
 };
 
-/**
- * Obtiene la lista de psicólogos aprobados y construye la URL completa de la foto.
- */
 export const getPsicologosListController = async (req, res) => {
     try {
         const [rows] = await pool.query(
