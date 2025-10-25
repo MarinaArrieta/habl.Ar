@@ -227,7 +227,7 @@ export default function AdminUsersList() {
             bg="#F0DCC9"
             paddingTop="0"
         >
-            <Heading fontSize="1.3rem" color="primary.800" mb={3}>Aprobación de psicólogos y eliminación de usuarios no-administradores</Heading>
+            <Heading fontSize="1.3rem" color="violet.50" mb={3} textAlign="center">Aprobación de psicólogos y eliminación de usuarios no-administradores</Heading>
             {
                 loading ? (
                     <HStack justifyContent="center" py={10}>

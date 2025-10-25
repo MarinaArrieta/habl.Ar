@@ -40,7 +40,11 @@ const theme = extendTheme({
             1000: "#012114ff",
         },
         yellow: { 50: "#E9A300" },
-        orange: { 50: "#DA5700" },
+        orange: { 
+            50: "#DA5700",
+            100: "#f9a66f",
+            200: "#6e2c00",
+        },
         blue: {
             50: "#353887",
         },
