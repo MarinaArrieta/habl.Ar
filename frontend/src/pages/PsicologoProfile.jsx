@@ -28,7 +28,6 @@ import { getUsuario, updateUsuario, deleteUsuario } from "../services/api";
 import { UserContext } from "../context/UserContext";
 
 const API_BASE_URL = "http://localhost:3000";
-/* const DOCUMENTS_BASE_URL = "http://localhost:3000/uploads/"; */
 const DOCUMENTS_BASE_URL = `${API_BASE_URL}/uploads/`;
 
 export default function PsicologoProfile() {
@@ -36,7 +35,7 @@ export default function PsicologoProfile() {
     const { usuario: usuarioContext, setUsuario } = useContext(UserContext);
     const navigate = useNavigate();
     const toast = useToast();
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure(); // Controla el modal de eliminación
 
     const [usuarioData, setUsuarioData] = useState(null);
     const [formData, setFormData] = useState({});
@@ -97,7 +96,7 @@ export default function PsicologoProfile() {
 
     const handleFileChange = (e) => {
         // Maneja la selección del archivo de la foto de perfil
-        setFotoFile(e.target.files[0]); // <--- NUEVA FUNCIÓN
+        setFotoFile(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
@@ -190,7 +189,10 @@ export default function PsicologoProfile() {
 
         setSaving(true);
         try {
+            // Llamada al servicio DELETE
             await deleteUsuario(id);
+
+            // Limpieza de sesión
             localStorage.removeItem("token");
             localStorage.removeItem("usuario");
             setUsuario(null);
@@ -251,7 +253,6 @@ export default function PsicologoProfile() {
                 </Box>
             </HStack>
 
-            {/* REEMPLAZAR <VStack spacing={3} align="flex-start" mb={6}> por la nueva sección de botones */}
             <HStack spacing={4} pt={2}>
                 <Button
                     onClick={() => setIsEditing(!isEditing)}
@@ -261,7 +262,18 @@ export default function PsicologoProfile() {
                 >
                     {isEditing ? "Cancelar Edición" : "Editar Perfil"}
                 </Button>
-                {/* ... resto de botones ... */}
+
+                {/* --- NUEVO BOTÓN PARA DARSE DE BAJA --- */}
+                <Button
+                    onClick={onOpen} // Llama a la función para abrir el modal de confirmación
+                    colorScheme="red"
+                    isLoading={saving}
+                    variant="outline"
+                    leftIcon={<Box as='span' children='🗑️' />} // Ícono de basura
+                >
+                    Darse de Baja
+                </Button>
+
             </HStack>
 
             {isEditing ? (
@@ -276,7 +288,7 @@ export default function PsicologoProfile() {
                             type="file"
                             name="foto_perfil"
                             accept="image/*"
-                            onChange={handleFileChange} // <--- Usamos el nuevo manejador
+                            onChange={handleFileChange}
                             p={1}
                         />
                         {fotoFile && <Text color="teal.500" fontSize="sm" mt={1}>Archivo seleccionado: {fotoFile.name}</Text>}
@@ -337,7 +349,7 @@ export default function PsicologoProfile() {
                     </Button>
                 </VStack>
             ) : (
-                <VStack spacing={3} align="flex-start" divider={<Divider />}>
+                <VStack spacing={3} align="flex-start" divider={<Divider />} mt={6}>
                     <Text>
                         <Text as="b">Email:</Text> {usuarioData.email}
                     </Text>
@@ -368,6 +380,8 @@ export default function PsicologoProfile() {
                     </Text>
                 </VStack>
             )}
+
+            {/* Modal de confirmación (Ya estaba en el código, se usa con onOpen/onClose/handleDelete) */}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
