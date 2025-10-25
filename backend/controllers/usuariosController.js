@@ -200,7 +200,7 @@ export const getUsuariosController = async (req, res) => {
 // ==========================================================
 // REGISTRAR/PROMOVER A ADMIN (Solo Admin a Admin)
 // ==========================================================
-export const registerAdminController = async (req, res) => {
+/* export const registerAdminController = async (req, res) => {
     try {
         const { id } = req.body; // Esperamos el ID del usuario a promover
 
@@ -228,6 +228,61 @@ export const registerAdminController = async (req, res) => {
     } catch (error) {
         console.error("Error al promover a administrador:", error);
         res.status(500).json({ error: "Error interno al promover a administrador." });
+    }
+}; */
+// ==========================================================
+// REGISTRAR NUEVO ADMIN (Solo Admin a Admin)
+// ==========================================================
+export const registerAdminController = async (req, res) => {
+    try {
+        // La validación de permiso de admin (req.user.tipo !== 'admin')
+        // ya se realiza antes, en los middlewares de la ruta.
+
+        // Extraemos los datos del formulario del frontend
+        const {
+            nombre,
+            apellido,
+            email,
+            password: contrasena, // Renombramos 'password' a 'contrasena' para la DB
+        } = req.body;
+
+        // --- 1. Validación de campos obligatorios ---
+        if (!nombre || !email || !contrasena) {
+            return res.status(400).json({ error: "Faltan campos obligatorios: nombre, email y contraseña." });
+        }
+
+        // --- 2. Verificar que el email no esté registrado ---
+        const [existing] = await pool.query("SELECT * FROM usuarios WHERE email = ?", [email]);
+        if (existing.length > 0) {
+            return res.status(400).json({ error: "El email ya está registrado." });
+        }
+
+        // --- 3. Hashear contraseña y registrar ---
+        const hashedPassword = await bcrypt.hash(contrasena, 10);
+        const tipo = 'admin';
+
+        const [result] = await pool.query(
+            // Se inserta solo lo esencial para un Admin, forzando el tipo
+            `INSERT INTO usuarios (nombre, apellido, email, contrasena, tipo) VALUES (?, ?, ?, ?, ?)`,
+            [
+                nombre,
+                apellido,
+                email,
+                hashedPassword,
+                tipo,
+            ]
+        );
+
+        res.status(201).json({ 
+            message: `Nuevo administrador ${nombre} registrado con éxito.`,
+            id: result.insertId,
+            email: email,
+            tipo: tipo,
+        });
+
+    } catch (error) {
+        console.error("Error al registrar nuevo administrador:", error);
+        res.status(500).json({ error: "Error interno al registrar el administrador." });
     }
 };
 
@@ -344,6 +399,20 @@ export const updateUsuarioController = async (req, res) => {
 export const deleteUsuarioController = async (req, res) => {
     try {
         const { id } = req.params;
+
+
+        const ADMIN_PROTEGIDO_EMAIL = "admin@ejemplo.com";
+        // 1. Obtener el usuario a eliminar para verificar su email
+        const [userToDeleteRows] = await pool.query("SELECT email FROM usuarios WHERE id = ?", [id]);
+        if (userToDeleteRows.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+        // 2. Comprobación de seguridad: Evitar eliminar al admin principal
+        if (userToDeleteRows[0].email === ADMIN_PROTEGIDO_EMAIL) {
+            return res.status(403).json({ error: "Acceso denegado. No se puede eliminar al administrador principal." });
+        }
+
+        
 
         if (req.user.id.toString() !== id && req.user.tipo !== 'admin') {
             return res.status(403).json({ error: "No tienes permiso para eliminar esta cuenta." });

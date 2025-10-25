@@ -1,186 +1,3 @@
-/* import { useState, useEffect } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Button,
-  HStack,
-  Heading,
-  useToast,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Text,
-  Badge,
-  Spinner,
-} from "@chakra-ui/react";
-import axios from "axios";
-import { FaTrashAlt } from "react-icons/fa";
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("token");
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-};
-
-// Obtener todos los usuarios (GET /api/usuarios)
-const getUsuarios = async () => {
-  try {
-    const response = await axios.get("/api/usuarios", getAuthHeaders());
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener usuarios:", error);
-    throw error;
-  }
-};
-
-// Promover un usuario a administrador (POST /api/admin/register)
-const promoteUserToAdmin = async (id) => {
-  try {
-    const response = await axios.post("/api/admin/register", { id }, getAuthHeaders());
-    return response.data;
-  } catch (error) {
-    console.error("Error al promover a administrador:", error);
-    throw error;
-  }
-};
-
-export default function AdminRegister() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const toast = useToast();
-  const navigate = useNavigate();
-  const usuarioActual = JSON.parse(localStorage.getItem("usuario"));
-
-  const cargarUsuarios = async () => {
-    if (!usuarioActual || usuarioActual.tipo !== "admin") {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const data = await getUsuarios();
-
-      if (Array.isArray(data)) {
-
-        const administradores = data.filter(user => user.tipo === 'admin');
-        setUsuarios(administradores);
-
-      } else {
-        setUsuarios([]);
-      }
-    } catch (error) {
-      console.error("Error al obtener la lista de usuarios:", error);
-      const message = error.response?.data?.error || "No se pudo cargar la lista de usuarios. Asegúrate que el backend esté funcionando y la ruta /api/usuarios esté implementada.";
-      toast({
-        title: "Error de carga",
-        description: message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    cargarUsuarios();
-  }, []);
-
-  const handlePromote = async (id, nombre) => {
-
-    if (!window.confirm(`¿Estás seguro de que quieres promover a ${nombre} (ID: ${id}) a Administrador?`)) {
-      return;
-    }
-
-    try {
-      await promoteUserToAdmin(id);
-      toast({
-        title: "Promoción exitosa",
-        description: `${nombre} es ahora administrador.`,
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      cargarUsuarios();
-    } catch (error) {
-      console.error("Error al promover a admin:", error);
-      const message = error.response?.data?.error || "Ocurrió un error al intentar promover al usuario.";
-      toast({
-        title: "Error de promoción",
-        description: message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const getBadgeColor = (tipo) => {
-    switch (tipo) {
-      case 'admin': return 'purple';
-      case 'psicologo': return 'blue';
-      case 'voluntario': return 'teal';
-      default: return 'gray';
-    }
-  };
-
-  return (
-    <Box paddingTop="0">
-      <Heading fontSize="1.3rem" color="orange.50" mb={3} textAlign="center">Registro de Administradores</Heading>
-
-      {loading ? (
-        <HStack justifyContent="center" py={10}>
-          <Spinner size="xl" />
-          <Text ml={3}>Cargando lista de usuarios...</Text>
-        </HStack>
-      ) : (
-        <Table variant="simple" size="sm">
-          <Thead bg="orange.200">
-            <Tr>
-              <Th color="#F0DCC9">ID</Th>
-              <Th color="#F0DCC9">Nombre</Th>
-              <Th color="#F0DCC9">Email</Th>
-              <Th color="#F0DCC9">Tipo</Th>
-              <Th color="#F0DCC9">Acciones</Th>
-            </Tr>
-          </Thead>
-          <Tbody bg="orange.100">
-            {usuarios.map((user) => (
-              <Tr key={user.id}>
-                <Td color="orange.200">{user.id}</Td>
-                <Td color="orange.200">{user.nombre} {user.apellido}</Td>
-                <Td color="orange.200">{user.email}</Td>
-                <Td color="orange.200">
-                  <Badge colorScheme={getBadgeColor(user.tipo)}>
-                    {user.tipo}
-                  </Badge>
-                </Td>
-                <Button
-                  size="sm"
-                  colorScheme="red"
-                  leftIcon={<FaTrashAlt />}
-                  onClick={() => handleDelete(user.id, user.nombre, user.apellido)}
-                >
-                  Eliminar
-                </Button>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      )}
-    </Box>
-  );
-} */
-
-
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
 import {
@@ -198,15 +15,14 @@ import {
   Text,
   Badge,
   Spinner,
-  VStack,
-  // Se elimina Toast de las importaciones de Chakra, ya que no es un componente de UI directo
+  FormControl,
+  FormLabel,
+  Input,
+  Card,
+  CardBody,
+  CardHeader
 } from "@chakra-ui/react";
 import axios from "axios";
-// Se eliminó la importación de "react-icons/fa" para evitar errores de compilación
-
-// ==========================================================
-// CONSTANTES Y FUNCIONES DE API
-// ==========================================================
 
 const ADMIN_PROTEGIDO_EMAIL = "admin@ejemplo.com";
 
@@ -233,7 +49,6 @@ const getUsuarios = async () => {
 // FUNCIÓN: Eliminar un usuario (DELETE /api/usuarios/:id)
 const deleteUsuario = async (id) => {
   try {
-    // Usamos DELETE al endpoint con el ID en la URL.
     const response = await axios.delete(`/api/usuarios/${id}`, getAuthHeaders());
     return response.data;
   } catch (error) {
@@ -242,20 +57,142 @@ const deleteUsuario = async (id) => {
   }
 };
 
-// Promover un usuario a administrador (POST /api/admin/register)
-const promoteUserToAdmin = async (id) => {
+// FUNCIÓN: Registrar nuevo administrador (POST /api/usuarios/register-admin)
+const registerAdminUser = async (adminData) => {
   try {
-    const response = await axios.post("/api/admin/register", { id }, getAuthHeaders());
+    const registrationUrl = `/api/usuarios/register-admin`;
+    const response = await axios.post(registrationUrl, adminData, getAuthHeaders());
+
     return response.data;
   } catch (error) {
-    console.error("Error al promover a administrador:", error);
+    console.error("Error al registrar administrador:", error);
     throw error;
   }
 };
 
-// ==========================================================
-// COMPONENTE PRINCIPAL
-// ==========================================================
+function AdminRegistrationForm({ cargarUsuarios }) {
+  const toast = useToast();
+  const [formState, setFormState] = useState({
+    nombre: "",
+    apellido: "",
+    email: "",
+    password: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    setFormState({
+      ...formState,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      if (!formState.nombre || !formState.email || !formState.password) {
+        throw new Error("Por favor, completa todos los campos requeridos (Nombre, Email, Contraseña).");
+      }
+
+      await registerAdminUser(formState);
+
+      toast({
+        title: "Administrador Registrado",
+        description: `El nuevo administrador ${formState.email} ha sido creado exitosamente.`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+
+      setFormState({ nombre: "", apellido: "", email: "", password: "" });
+      cargarUsuarios();
+    } catch (error) {
+      console.error("Error en el registro:", error);
+      const message = error.message || error.response?.data?.error || "Ocurrió un error al intentar registrar al nuevo administrador.";
+
+      toast({
+        title: "Error de Registro",
+        description: message,
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="white" className="admin-form-card">
+      <CardHeader pb={2}>
+        <Heading size="md" color="teal.600">Registrar Nuevo Administrador</Heading>
+      </CardHeader>
+      <CardBody>
+        <form onSubmit={handleSubmit}>
+          <HStack spacing={4} mb={4}>
+            <FormControl id="nombre" isRequired>
+              <FormLabel fontSize="sm">Nombre</FormLabel>
+              <Input
+                name="nombre"
+                value={formState.nombre}
+                onChange={handleChange}
+                placeholder="Nombre"
+                size="sm"
+                focusBorderColor="teal.500"
+              />
+            </FormControl>
+            <FormControl id="apellido">
+              <FormLabel fontSize="sm">Apellido</FormLabel>
+              <Input
+                name="apellido"
+                value={formState.apellido}
+                onChange={handleChange}
+                placeholder="Apellido (opcional)"
+                size="sm"
+                focusBorderColor="teal.500"
+              />
+            </FormControl>
+          </HStack>
+          <FormControl id="email" isRequired mb={4}>
+            <FormLabel fontSize="sm">Email</FormLabel>
+            <Input
+              name="email"
+              type="email"
+              value={formState.email}
+              onChange={handleChange}
+              placeholder="correo@ejemplo.com"
+              size="sm"
+              focusBorderColor="teal.500"
+            />
+          </FormControl>
+          <FormControl id="password" isRequired mb={6}>
+            <FormLabel fontSize="sm">Contraseña</FormLabel>
+            <Input
+              name="password"
+              type="password"
+              value={formState.password}
+              onChange={handleChange}
+              placeholder="Mínimo 6 caracteres"
+              size="sm"
+              focusBorderColor="teal.500"
+            />
+          </FormControl>
+          <Button
+            type="submit"
+            colorScheme="teal"
+            isLoading={isSubmitting}
+            loadingText="Registrando..."
+          /* isFullWidth */
+          >
+            Registrar Administrador
+          </Button>
+        </form>
+      </CardBody>
+    </Card>
+  );
+}
 
 export default function AdminRegister() {
   const [usuarios, setUsuarios] = useState([]);
@@ -263,15 +200,11 @@ export default function AdminRegister() {
   const toast = useToast();
   const navigate = useNavigate();
 
-  // *** CORRECCIÓN CLAVE: Estabilizar la referencia de usuarioActual con useMemo ***
   const usuarioActual = useMemo(() => {
-    // Leemos de localStorage y parseamos solo una vez
     return JSON.parse(localStorage.getItem("usuario") || "null");
-  }, []); // Dependencia vacía para que solo se calcule al montar el componente
+  }, []);
 
-  // CORRECCIÓN CLAVE: Envolver cargarUsuarios en useCallback
   const cargarUsuarios = useCallback(async () => {
-    // usuarioActual ahora tiene una referencia estable
     if (!usuarioActual || usuarioActual.tipo !== "admin") {
       navigate("/login");
       return;
@@ -282,7 +215,6 @@ export default function AdminRegister() {
       const data = await getUsuarios();
 
       if (Array.isArray(data)) {
-        // Filtramos solo a los administradores
         const administradores = data.filter(user => user.tipo === 'admin');
         setUsuarios(administradores);
       } else {
@@ -301,15 +233,14 @@ export default function AdminRegister() {
     } finally {
       setLoading(false);
     }
-  }, [usuarioActual, navigate, toast]); // Dependencias estables
+  }, [usuarioActual, navigate, toast]);
 
   useEffect(() => {
     cargarUsuarios();
-  }, [cargarUsuarios]); // Ahora useEffect tiene una dependencia estable (cargarUsuarios)
+  }, [cargarUsuarios]);
 
   // MANEJADOR DE ELIMINACIÓN
   const handleDelete = async (id, nombre, apellido) => {
-    // Se usa window.confirm para simular una alerta modal
     if (typeof window !== 'undefined' && !window.confirm(`¿Estás seguro de que quieres ELIMINAR permanentemente al administrador ${nombre} ${apellido} (ID: ${id})? Esta acción es irreversible.`)) {
       return;
     }
@@ -323,7 +254,7 @@ export default function AdminRegister() {
         duration: 3000,
         isClosable: true
       });
-      cargarUsuarios(); // Recargar la lista
+      cargarUsuarios();
     } catch (error) {
       console.error("Error al eliminar administrador:", error);
       const message = error.response?.data?.error || "Ocurrió un error al intentar eliminar al administrador.";
@@ -346,10 +277,6 @@ export default function AdminRegister() {
     }
   };
 
-  const handlePromote = async (id, nombre) => {
-    // ... (Tu lógica de promoción)
-  };
-
   const getBadgeColor = (tipo) => {
     switch (tipo) {
       case 'admin': return 'purple';
@@ -360,9 +287,10 @@ export default function AdminRegister() {
   };
 
   return (
-    <Box paddingTop="0" p={4}>
-      <Heading fontSize="1.3rem" color="primary.700" mb={3} textAlign="center">Gestión de Administradores</Heading>
-      <Text mb={4} textAlign="center" color="gray.600">
+    <Box paddingTop="0" p={4} maxW="container.xl" mx="auto">
+      <Heading fontSize="1.3rem" color="primary.700" mb={6} textAlign="center">Gestión de Administradores</Heading>
+      <AdminRegistrationForm cargarUsuarios={cargarUsuarios} />
+      <Text mb={4} textAlign="center" color="gray.600" pt={4} borderTop="1px solid" borderColor="gray.200">
         Solo el administrador con el email **{ADMIN_PROTEGIDO_EMAIL}** no puede ser eliminado.
       </Text>
 
@@ -394,7 +322,6 @@ export default function AdminRegister() {
                       {user.tipo}
                     </Badge>
                   </Td>
-                  {/* CORRECCIÓN: Asegurar que el botón está dentro de un Td */}
                   <Td>
                     {/* Lógica de Exclusión: Solo muestra el botón si el email NO es el protegido */}
                     {user.email !== ADMIN_PROTEGIDO_EMAIL ? (
@@ -420,5 +347,6 @@ export default function AdminRegister() {
     </Box>
   );
 }
+
 
 

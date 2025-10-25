@@ -14,8 +14,11 @@ export const getUsuarios = () => API.get("/api/usuarios");
 export const getUsuario = (id) => API.get(`/api/usuarios/${id}`);
 export const updateUsuario = (id, data) => API.put(`/api/usuarios/${id}`, data);
 export const deleteUsuario = (id) => API.delete(`/api/usuarios/${id}`);
-export const promoteUserToAdmin = (id) => API.post("/api/admin/register", { id });
+/* export const promoteUserToAdmin = (id) => API.post("/api/admin/register", { id }); */
 export const aprobarPsicologo = (id) => API.patch(`/api/usuarios/${id}/aprobar`);
+// NUEVA FUNCIÓN PARA REGISTRAR ADMINISTRADORES CON DATOS COMPLETOS
+/* export const registerAdminUser = (data) => API.post("/api/register-admin", data); */
+export const registerAdminUser = (data) => API.post("/api/usuarios/register-admin", data);
 
 
 // NUEVA FUNCIÓN para subir o actualizar la foto de perfil
