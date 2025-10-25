@@ -19,7 +19,7 @@ import {
     VStack, // Importamos VStack para organizar los botones
 } from "@chakra-ui/react";
 import axios from "axios";
-import { FaUserPlus, FaCheckCircle } from "react-icons/fa"; // FaCheckCircle para el botón de aprobación
+import { FaUserPlus, FaCheckCircle, FaTrashAlt } from "react-icons/fa"; // Importamos FaTrashAlt
 
 // ==========================================================
 // FUNCIONES DE API INTEGRADAS
@@ -45,21 +45,26 @@ const getUsuarios = async () => {
     }
 };
 
-// Promover un usuario a administrador (POST /api/admin/register)
-const promoteUserToAdmin = async (id) => {
+// NUEVA FUNCIÓN: Eliminar un usuario (DELETE /api/usuarios/:id)
+const deleteUsuario = async (id) => {
     try {
-        const response = await axios.post("/api/admin/register", { id }, getAuthHeaders());
+        // Usamos DELETE al endpoint con el ID en la URL.
+        const response = await axios.delete(`/api/usuarios/${id}`, getAuthHeaders());
         return response.data;
     } catch (error) {
-        console.error("Error al promover a administrador:", error);
+        console.error("Error al eliminar usuario:", error);
         throw error;
     }
 };
 
+// Promover un usuario a administrador (POST /api/admin/register)
+/* const promoteUserToAdmin = async (id) => {
+    // ... (función comentada, se mantiene por contexto)
+}; */
+
 // NUEVA FUNCIÓN: Aprobar un psicólogo (PUT /api/usuarios/approve-psicologo/:id)
 const aprobarPsicologo = async (id) => {
     try {
-        // Usamos PUT al endpoint con el ID en la URL. Asume este endpoint.
         const response = await axios.put(`/api/usuarios/approve-psicologo/${id}`, {}, getAuthHeaders());
         return response.data;
     } catch (error) {
@@ -77,9 +82,9 @@ export default function AdminUsersList() {
     const [loading, setLoading] = useState(true);
     const toast = useToast();
     const navigate = useNavigate();
-    // Usamos el hook useUser para obtener el usuario actual de manera más robusta
+
+    // Obtenemos el usuario actual
     const { usuarioActual } = useUser();
-    // Fallback si useUser no está listo o no existe
     const userFromStorage = JSON.parse(localStorage.getItem("usuario"));
     const finalUser = usuarioActual || userFromStorage;
 
@@ -98,7 +103,10 @@ export default function AdminUsersList() {
 
             if (Array.isArray(data)) {
                 // FILTRO CLAVE: Mostrar solo usuarios que NO son 'admin'
-                const noAdminUsuarios = data.filter(user => user.tipo !== 'admin');
+                // Además, el admin NO puede eliminarse a sí mismo, por eso filtramos el ID.
+                const noAdminUsuarios = data.filter(user =>
+                    user.tipo !== 'admin' && user.id !== finalUser.id
+                );
                 setUsuarios(noAdminUsuarios);
             } else {
                 setUsuarios([]);
@@ -122,36 +130,7 @@ export default function AdminUsersList() {
         cargarUsuarios();
     }, [cargarUsuarios]); // Dependencia del callback para evitar errores de eslint
 
-    // Manejador para promover a Admin
-    const handlePromote = async (id, nombre, apellido) => {
-        if (!window.confirm(`¿Estás seguro de que quieres promover a ${nombre} ${apellido} a Administrador?`)) {
-            return;
-        }
-
-        try {
-            await promoteUserToAdmin(id);
-            toast({
-                title: "Promoción exitosa",
-                description: `${nombre} es ahora administrador.`,
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            });
-            cargarUsuarios(); // Recargar la lista
-        } catch (error) {
-            console.error("Error al promover a admin:", error);
-            const message = error.response?.data?.error || "Ocurrió un error al intentar promover al usuario.";
-            toast({
-                title: "Error de promoción",
-                description: message,
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-            });
-        }
-    };
-
-    // NUEVO MANEJADOR: Aprobar a un psicólogo (Botón de "Alta")
+    // Manejador para aprobar a un psicólogo (Botón de "Alta")
     const handleApprove = async (id, nombre, apellido) => {
         if (!window.confirm(`¿Estás seguro de que deseas APROBAR al psicólogo ${nombre} ${apellido} y darlo de alta?`)) {
             return;
@@ -180,6 +159,46 @@ export default function AdminUsersList() {
         }
     };
 
+    // Manejador CORREGIDO para ELIMINAR un usuario
+    const handleDelete = async (id, nombre, apellido) => {
+        if (!window.confirm(`¿Estás seguro de que quieres eliminar permanentemente al usuario ${nombre} ${apellido} (ID: ${id})? Esta acción es irreversible.`)) {
+            return;
+        }
+        try {
+            await deleteUsuario(id);
+            toast({
+                title: "Usuario Eliminado",
+                description: `El usuario ${nombre} ${apellido} ha sido eliminado.`,
+                status: "success",
+                duration: 3000,
+                isClosable: true
+            });
+            cargarUsuarios(); // Recargar la lista de usuarios
+        } catch (error) {
+            console.error("Error al eliminar usuario:", error);
+
+            // Mensaje de error más detallado
+            const message = error.response?.data?.error || "Ocurrió un error al intentar eliminar el usuario.";
+
+            // Si el error es 403 (Forbidden), el token no tiene permisos de admin
+            if (error.response && error.response.status === 403) {
+                toast({
+                    title: "Acceso denegado",
+                    description: "Tu sesión no tiene permisos de administrador para esta acción.",
+                    status: "error",
+                    duration: 5000
+                });
+            } else {
+                toast({
+                    title: "Error de eliminación",
+                    description: message,
+                    status: "error",
+                    duration: 5000
+                });
+            }
+        }
+    };
+
     // Devuelve el esquema de color de Chakra para el tipo de usuario
     const getBadgeColor = (tipo) => {
         switch (tipo) {
@@ -190,7 +209,7 @@ export default function AdminUsersList() {
         }
     };
 
-    // NUEVO: Devuelve el esquema de color de Chakra para el estado de aprobación
+    // Devuelve el esquema de color de Chakra para el estado de aprobación
     const getApprovalColor = (estado_aprobacion) => {
         switch (estado_aprobacion) {
             case 'aprobado': return 'green';
@@ -201,9 +220,9 @@ export default function AdminUsersList() {
     };
 
     return (
-        <Box bg="gray.50" minH="100vh">
-            <Heading size="xl" mb={6} color="teal.700">Gestión de Usuarios</Heading>
-            <Text mb={6} color="gray.600">Lista de usuarios registrados que requieren gestión (Aprobación de psicólogos o promoción a administrador).</Text>
+        <Box bg="#F0DCC9" minH="100vh" p={4}>
+            <Heading size="lg" mb={4} color="primary.800">Gestión de Usuarios</Heading>
+            <Text mb={6} color="gray.600">Aprueba psicólogos y elimina usuarios no-administradores.</Text>
 
             {loading ? (
                 <HStack justifyContent="center" py={10}>
@@ -211,22 +230,23 @@ export default function AdminUsersList() {
                     <Text ml={3} fontSize="lg">Cargando lista de usuarios...</Text>
                 </HStack>
             ) : (
-                <Box overflowX="auto" bg="white" shadow="lg" borderRadius="lg">
+                <Box overflowX="auto" shadow="lg" borderRadius="lg">
                     <Table variant="simple" size="md">
                         <Thead>
-                            <Tr bg="teal.50">
-                                <Th>ID</Th>
-                                <Th>Nombre</Th>
-                                <Th>Email</Th>
-                                <Th>Tipo</Th>
-                                <Th>Aprobación</Th>
-                                <Th>Acciones</Th>
+                            <Tr bg="primary.700" >
+                                <Th color="#F0DCC9">ID</Th>
+                                <Th color="#F0DCC9">Nombre</Th>
+                                <Th color="#F0DCC9">Email</Th>
+                                <Th color="#F0DCC9">Tipo</Th>
+                                <Th color="#F0DCC9">Aprobación</Th>
+                                <Th color="#F0DCC9">Acciones</Th>
                             </Tr>
                         </Thead>
-                        <Tbody>
+                        <Tbody bg="yellow.50">
                             {usuarios.length > 0 ? (
                                 usuarios.map((user) => (
                                     <Tr key={user.id} _hover={{ bg: "gray.50" }}>
+                                        {/* ID y detalles del usuario */}
                                         <Td maxW="150px" overflow="hidden" textOverflow="ellipsis">{user.id}</Td>
                                         <Td>{user.nombre} {user.apellido}</Td>
                                         <Td>{user.email}</Td>
@@ -236,14 +256,11 @@ export default function AdminUsersList() {
                                             </Badge>
                                         </Td>
                                         <Td>
-                                            {user.estado_aprobacion === 'aprobado' && (
-                                                <Badge colorScheme={getApprovalColor(user.estado_aprobacion)}>
-                                                    {user.estado_aprobacion}
-                                                </Badge>
-                                            )}
+                                            <Badge colorScheme={getApprovalColor(user.estado_aprobacion)}>
+                                                {user.estado_aprobacion || "n/a"}
+                                            </Badge>
                                         </Td>
                                         <Td>
-                                            {/* Usamos VStack para apilar los botones si es necesario */}
                                             <VStack spacing={2} align="start">
 
                                                 {/* 1. Botón de APROBACIÓN (SOLO PSICÓLOGOS PENDIENTES) */}
@@ -254,11 +271,21 @@ export default function AdminUsersList() {
                                                         leftIcon={<FaCheckCircle />}
                                                         onClick={() => handleApprove(user.id, user.nombre, user.apellido)}
                                                     >
-                                                        Aprobar Psicólogo
+                                                        Aprobar
                                                     </Button>
                                                 )}
 
-                                                {/* 2. Botón de PROMOCIÓN (Siempre disponible para usuarios no-admin) */}
+                                                {/* 2. Botón de ELIMINAR (Para todos los usuarios mostrados, excepto el propio admin) */}
+                                                <Button
+                                                    size="sm"
+                                                    colorScheme="red"
+                                                    leftIcon={<FaTrashAlt />}
+                                                    onClick={() => handleDelete(user.id, user.nombre, user.apellido)}
+                                                >
+                                                    Eliminar
+                                                </Button>
+
+                                                {/* Botón de PROMOCIÓN (Comentado, se mantiene por contexto) */}
                                                 {/* <Button
                                                     size="sm"
                                                     colorScheme="purple"

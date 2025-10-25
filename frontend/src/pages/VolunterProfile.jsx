@@ -151,7 +151,6 @@ export default function VolunterProfile() {
       requestData = payload;
     }
 
-
     try {
       const res = await updateUsuario(id, requestData);
 
@@ -181,30 +180,6 @@ export default function VolunterProfile() {
     }
   };
 
-  /* const handleDelete = async () => {
-    onClose();
-
-    if (loggedInUser?.id?.toString() !== id) {
-      return toast({ title: "Acceso denegado", description: "Solo puedes eliminar tu propia cuenta.", status: "error" });
-    }
-
-    try {
-      await deleteUsuario(id);
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario");
-      setUsuario(null);
-
-      toast({ title: "Cuenta eliminada", description: "Tu cuenta de voluntario ha sido dada de baja con éxito.", status: "info" });
-      navigate("/");
-    } catch (err) {
-      toast({
-        title: "Error al dar de baja",
-        description: err.response?.data?.error || "Intenta de nuevo.",
-        status: "error"
-      });
-    }
-  }; */
   const handleDelete = async () => {
     onClose();
 
@@ -288,7 +263,6 @@ export default function VolunterProfile() {
             )}
           </Box>
 
-          {/* {isProfileOwner && isEditing && ( */}
           {isEditing && (
             <Text mt={2} fontSize="sm" color="gray.500">Selecciona una nueva foto abajo para reemplazar la actual</Text>
           )}
@@ -305,8 +279,6 @@ export default function VolunterProfile() {
               *Tipo de cuenta: {voluntario.tipo}*
             </Text>
 
-            {/* 🔑 CORRECCIÓN: Los botones solo se muestran si el usuario logeado es el dueño del perfil. */}
-            {/* {isProfileOwner && ( */}
             <>
               <Button colorScheme="blue" onClick={() => setIsEditing(true)} mt={4}>
                 Editar Datos
@@ -321,8 +293,6 @@ export default function VolunterProfile() {
           <form onSubmit={handleUpdate}>
             <Stack spacing={4}>
 
-              {/* El campo de la foto solo es visible si es el dueño */}
-              {/* {isProfileOwner && ( */}
               <FormControl>
                 <FormLabel>Foto de Perfil **(Opcional)**</FormLabel>
                 <Input
@@ -332,11 +302,9 @@ export default function VolunterProfile() {
                   onChange={handleFileChange}
                   p={1}
                 />
-                {/* {profileImageFile && <Text color="teal.500" fontSize="sm" mt={1}>Archivo seleccionado: {profileImageFile.name}</Text>} */}
-                {/* <Text color="teal.500" fontSize="sm" mt={1}>Archivo seleccionado: {profileImageFile.name}</Text> */}
+
                 {profileImageFile && <Text color="teal.500" fontSize="sm" mt={1}>Archivo seleccionado: {profileImageFile.name}</Text>}
               </FormControl>
-              {/* )} */}
 
               <FormControl isRequired>
                 <FormLabel>Nombre</FormLabel>
