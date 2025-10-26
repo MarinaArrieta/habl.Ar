@@ -133,7 +133,7 @@ export default function Home() {
               Cancel
             </Button>
             <Button
-              variant='solid3D' // Usamos la variante grande, pero sin padding extra
+              variant='solid3D'
               colorScheme='primary'
             >
               Submit

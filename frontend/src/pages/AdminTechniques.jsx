@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
     Box,
     Button,
@@ -10,10 +10,18 @@ import {
     Heading,
     useToast,
     Select,
-    Stack,
-    Image,
-    Center,
-    Divider,
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
+    Text,
+    Spinner,
+    Card,
+    CardBody,
+    CardHeader,
+    Tooltip,
 } from "@chakra-ui/react";
 import {
     fetchTecnicas,
@@ -21,46 +29,47 @@ import {
     updateTecnica,
     deleteTecnica,
 } from "../services/techniques";
-import AdminMenu from "../components/MenuAdmin";
+
+const TIPOS_TECNICA = [
+    "Respiración Consciente",
+    "Relajación Muscular Progresiva (RMP)",
+    "Meditación y Mindfulness",
+    "Otros",
+];
 
 export default function AdminTechniques() {
     const [tecnicas, setTecnicas] = useState([]);
-    const [titulo, setTitulo] = useState("");
-    const [tipo, setTipo] = useState("");
-    const [descripcion, setDescripcion] = useState("");
-    const [url, setUrl] = useState("");
+    const [loading, setLoading] = useState(true);
 
-    const [editId, setEditId] = useState(null);
+    // Estado para el formulario de REGISTRO
+    const [newTitulo, setNewTitulo] = useState("");
+    const [newTipo, setNewTipo] = useState("");
+    const [newDescripcion, setNewDescripcion] = useState("");
+    const [newUrl, setNewUrl] = useState("");
+
+    // Estado para gestionar la EDICIÓN EN LÍNEA
+    const [editingId, setEditingId] = useState(null);
+    const [editForm, setEditForm] = useState({});
 
     const toast = useToast();
     const navigate = useNavigate();
-    // Usar el Contexto sería mejor, pero por ahora mantendremos el localStorage para el chequeo de acceso.
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
+    // --- Lógica de Carga ---
     const cargarTecnicas = async () => {
         if (!usuario || usuario.tipo !== "admin") {
             navigate("/login");
             return;
         }
+        setLoading(true);
         try {
             const res = await fetchTecnicas();
-            let dataArray = [];
-
-            if (res && Array.isArray(res.data)) {
-                dataArray = res.data;
-            } else if (res && res.data && Array.isArray(res.data.data)) {
-                dataArray = res.data.data;
-            } else {
-                console.error("La API de técnicas no devolvió el array en la estructura esperada (res.data o res.data.data):", res);
-                setTecnicas([]);
-                return;
-            }
-
+            let dataArray = Array.isArray(res?.data) ? res.data : Array.isArray(res?.data?.data) ? res.data.data : [];
             setTecnicas(dataArray);
-
         } catch (error) {
-            /* console.error("Error al cargar técnicas:", error); */
             toast({ title: "Error al cargar técnicas", description: error.message, status: "error", duration: 3000 });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -68,106 +77,221 @@ export default function AdminTechniques() {
         cargarTecnicas();
     }, []);
 
-    // Crear o actualizar técnica
-    const handleSubmit = async () => {
-        if (!titulo || !tipo || !descripcion) {
-            toast({ title: "Completa todos los campos", status: "warning", duration: 2000 });
+    // --- Lógica de Registro (Formulario Superior) ---
+    const handleRegister = async () => {
+        if (!newTitulo || !newTipo || !newDescripcion) {
+            toast({ title: "Completa los campos obligatorios", status: "warning", duration: 2000 });
             return;
         }
 
         try {
-            const data = { titulo, tipo, descripcion, url_multimedia: url };
+            const data = { titulo: newTitulo, tipo: newTipo, descripcion: newDescripcion, url_multimedia: newUrl };
+            await createTecnica(data);
+            toast({ title: "Técnica creada", status: "success", duration: 2000 });
 
-            if (editId) {
-                const updated = await updateTecnica(editId, data);
-                if (updated) toast({ title: "Técnica actualizada", status: "success", duration: 2000 });
-                setEditId(null);
-            } else {
-                const created = await createTecnica(data);
-                if (created) toast({ title: "Técnica creada", status: "success", duration: 2000 });
-            }
+            // Limpiar formulario
+            setNewTitulo("");
+            setNewTipo("");
+            setNewDescripcion("");
+            setNewUrl("");
+
         } catch (error) {
-            console.error("Error en submit:", error);
-            toast({ title: "Error al guardar técnica", description: error.message, status: "error", duration: 3000 });
+            toast({ title: "Error al crear técnica", description: error.message || "Error desconocido", status: "error", duration: 3000 });
         }
-
-
-        setTitulo("");
-        setTipo("");
-        setDescripcion("");
-        setUrl("");
         cargarTecnicas();
     };
 
-    // Editar técnica
-    const handleEdit = (tecnica) => {
-        setEditId(tecnica.id);
-        setTitulo(tecnica.titulo);
-        setTipo(tecnica.tipo);
-        setDescripcion(tecnica.descripcion);
-        setUrl(tecnica.url_multimedia || "");
+    // --- Lógica de Edición en Línea ---
+    const startEdit = (tecnica) => {
+        // Establecer el ID de la fila a editar
+        setEditingId(tecnica.id);
+        // Inicializar el estado del formulario de edición con los datos de la fila
+        setEditForm({
+            titulo: tecnica.titulo,
+            tipo: tecnica.tipo,
+            descripcion: tecnica.descripcion,
+            url_multimedia: tecnica.url_multimedia || "",
+        });
     };
 
-    // Eliminar técnica
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
+        setEditForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleUpdate = async (id) => {
+        if (!editForm.titulo || !editForm.tipo || !editForm.descripcion) {
+            toast({ title: "Completa los campos obligatorios", status: "warning", duration: 2000 });
+            return;
+        }
+
+        try {
+            await updateTecnica(id, editForm);
+            toast({ title: "Técnica actualizada", status: "success", duration: 2000 });
+            setEditingId(null); // Salir del modo edición
+            cargarTecnicas(); // Recargar la lista
+        } catch (error) {
+            toast({ title: "Error al actualizar", description: error.message || "Error desconocido", status: "error", duration: 3000 });
+        }
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditForm({});
+    };
+
+    // --- Lógica de Eliminación ---
     const handleDelete = async (id) => {
         if (!window.confirm(`¿Estás seguro de que quieres eliminar la técnica con ID ${id}?`)) {
             return;
         }
         try {
-            const deleted = await deleteTecnica(id);
-            if (deleted) toast({ title: "Técnica eliminada", status: "info", duration: 2000 });
-            cargarTecnicas();
+            await deleteTecnica(id);
+            toast({ title: "Técnica eliminada", status: "info", duration: 2000 });
         } catch (error) {
-            console.error("Error al eliminar:", error);
-            // Si el error es 403 (Forbidden), el token no tiene permisos de admin
-            if (error.response && error.response.status === 403) {
-                toast({ title: "Acceso denegado", description: "Tu sesión no tiene permisos de administrador para esta acción.", status: "error", duration: 5000 });
-            } else {
-                toast({ title: "Error de eliminación", description: error.message, status: "error", duration: 3000 });
-            }
+            const message = error.response?.data?.error || error.message || "Error desconocido al eliminar.";
+            toast({ title: "Error de eliminación", description: message, status: "error", duration: 3000 });
         }
+        cargarTecnicas();
     };
 
     return (
-        <VStack w={{ base: '80%', xl: '60%' }} paddingTop="0">
-            <VStack spacing={3} mb={5} align="start">
-                <Input placeholder="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
-                <Select placeholder="Tipo de técnica" value={tipo} onChange={(e) => setTipo(e.target.value)}>
-                    <option>Respiración Consciente</option>
-                    <option>Relajación Muscular Progresiva (RMP)</option>
-                    <option>Meditación y Mindfulness</option>
-                </Select>
-                <Textarea placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-                <Input placeholder="URL multimedia (opcional)" value={url} onChange={(e) => setUrl(e.target.value)} />
-                <Button colorScheme="teal" onClick={handleSubmit}>
-                    {editId ? "Actualizar Técnica" : "Crear Técnica"}
-                </Button>
-            </VStack>
-            {/* Listado de Técnicas */}
-            <VStack spacing={3} align="stretch">
-                {tecnicas.map((t) => (
-                    <Box key={t.id} p={3} borderWidth={1} borderRadius="md">
-                        <Stack direction="row">
-                            {t.url_multimedia && (
-                                <Image boxSize="100px" objectFit="cover" src={t.url_multimedia} alt={t.titulo} />
-                            )}
-                        </Stack>
-                        <p>ID: {t.id}</p>
-                        <Heading size="sm">{t.titulo}</Heading>
-                        <p><strong>Tipo:</strong> {t.tipo}</p>
-                        <p>{t.descripcion}</p>
-                        {t.url_multimedia && (
-                            <p>
-                                <a href={t.url_multimedia} target="_blank" rel="noreferrer">Ver multimedia</a>
-                            </p>
-                        )}
-                        <HStack mt={2} spacing={2}>
-                            <Button size="sm" colorScheme="yellow" onClick={() => handleEdit(t)}>Editar</Button>
-                            <Button size="sm" colorScheme="red" onClick={() => handleDelete(t.id)}>Eliminar</Button>
+        <Box p={4} maxW="container.xl" mx="auto">
+            <Heading size="lg" mb={6} textAlign="center">Gestión de Técnicas de Ayuda</Heading>
+
+            {/* 1. Formulario de Registro (Solo Crear) */}
+            <Card mb={8} p={4} borderRadius="xl" shadow="lg">
+                <CardHeader pb={2}>
+                    <Heading size="md" color="teal.600">
+                        ➕ Registrar Nueva Técnica
+                    </Heading>
+                </CardHeader>
+                <CardBody>
+                    <VStack spacing={4} align="stretch">
+                        <HStack spacing={4} align="stretch">
+                            <Input
+                                placeholder="Título"
+                                value={newTitulo}
+                                onChange={(e) => setNewTitulo(e.target.value)}
+                                focusBorderColor="teal.500"
+                            />
+                            <Select
+                                placeholder="Selecciona el Tipo de Técnica"
+                                value={newTipo}
+                                onChange={(e) => setNewTipo(e.target.value)}
+                                focusBorderColor="teal.500"
+                            >
+                                {TIPOS_TECNICA.map(t => (
+                                    <option key={t} value={t}>{t}</option>
+                                ))}
+                            </Select>
                         </HStack>
-                    </Box>
-                ))}
-            </VStack>
-        </VStack>
+                        <Textarea
+                            placeholder="Descripción"
+                            value={newDescripcion}
+                            onChange={(e) => setNewDescripcion(e.target.value)}
+                            focusBorderColor="teal.500"
+                        />
+                        <Input
+                            placeholder="URL multimedia (opcional: Youtube, etc.)"
+                            value={newUrl}
+                            onChange={(e) => setNewUrl(e.target.value)}
+                            focusBorderColor="teal.500"
+                        />
+                        <Button colorScheme="teal" onClick={handleRegister}>
+                            Crear Técnica
+                        </Button>
+                    </VStack>
+                </CardBody>
+            </Card>
+
+            {/* 2. Listado de Técnicas (Tabla con Edición en Línea) */}
+            <Heading size="md" mb={4} mt={8}>Lista de Técnicas Registradas</Heading>
+
+            {loading ? (
+                <HStack justifyContent="center" py={10}>
+                    <Spinner size="lg" color="teal.500" />
+                    <Text ml={3}>Cargando técnicas...</Text>
+                </HStack>
+            ) : (
+                <Box overflowX="auto" shadow="md" borderRadius="lg">
+                    <Table variant="simple" size="sm">
+                        <Thead bg="teal.600">
+                            <Tr>
+                                <Th color="white" w="50px">ID</Th>
+                                <Th color="white" w="180px">Título</Th>
+                                <Th color="white" w="150px">Tipo</Th>
+                                <Th color="white" w="300px">Descripción</Th>
+                                <Th color="white" w="120px">URL Multimedia</Th>
+                                <Th color="white" w="180px" textAlign="center">Acciones</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody bg="white">
+                            {tecnicas.length === 0 ? (
+                                <Tr><Td colSpan={6} textAlign="center">No hay técnicas registradas.</Td></Tr>
+                            ) : (
+                                tecnicas.map((t) => (
+                                    <Tr key={t.id} _hover={{ bg: editingId !== t.id ? "gray.50" : "yellow.50" }}>
+                                        {/* Modo Edición */}
+                                        {editingId === t.id ? (
+                                            <>
+                                                <Td>{t.id}</Td>
+                                                <Td><Input name="titulo" value={editForm.titulo} onChange={handleEditChange} size="sm" /></Td>
+                                                <Td>
+                                                    <Select name="tipo" value={editForm.tipo} onChange={handleEditChange} size="sm">
+                                                        {TIPOS_TECNICA.map(type => (<option key={type} value={type}>{type}</option>))}
+                                                    </Select>
+                                                </Td>
+                                                <Td>
+                                                    <Textarea name="descripcion" value={editForm.descripcion} onChange={handleEditChange} size="sm" rows={2} />
+                                                </Td>
+                                                <Td>
+                                                    <Input name="url_multimedia" value={editForm.url_multimedia} onChange={handleEditChange} size="sm" placeholder="URL" />
+                                                </Td>
+                                                <Td textAlign="center">
+                                                    <VStack spacing={1}>
+                                                        <Button size="xs" colorScheme="teal" onClick={() => handleUpdate(t.id)} >Guardar</Button>
+                                                        <Button size="xs" colorScheme="gray" onClick={cancelEdit} >Cancelar</Button>
+                                                    </VStack>
+                                                </Td>
+                                            </>
+                                        ) : (
+                                            /* Modo Lectura */
+                                            <>
+                                                <Td>{t.id}</Td>
+                                                <Td><Text noOfLines={1} title={t.titulo}>{t.titulo}</Text></Td>
+                                                <Td>{t.tipo}</Td>
+                                                <Td>
+                                                    <Tooltip label={t.descripcion} placement="top" openDelay={500}>
+                                                        <Text noOfLines={2} fontSize="sm">{t.descripcion}</Text>
+                                                    </Tooltip>
+                                                </Td>
+                                                <Td>
+                                                    {t.url_multimedia ? (
+                                                        <a href={t.url_multimedia} target="_blank" rel="noreferrer" style={{ color: 'teal', fontSize: '12px' }}>Ver Link</a>
+                                                    ) : (
+                                                        <Text fontSize="xs" color="gray.500">N/A</Text>
+                                                    )}
+                                                </Td>
+                                                <Td textAlign="center">
+                                                    <HStack spacing={2} justifyContent="center">
+                                                        <Button size="xs" colorScheme="yellow" onClick={() => startEdit(t)}>
+                                                            Editar
+                                                        </Button>
+                                                        <Button size="xs" colorScheme="red" onClick={() => handleDelete(t.id)}>
+                                                            Eliminar
+                                                        </Button>
+                                                    </HStack>
+                                                </Td>
+                                            </>
+                                        )}
+                                    </Tr>
+                                ))
+                            )}
+                        </Tbody>
+                    </Table>
+                </Box>
+            )}
+        </Box>
     );
 }

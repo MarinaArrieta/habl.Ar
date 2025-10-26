@@ -125,38 +125,44 @@ function AdminRegistrationForm({ cargarUsuarios }) {
   };
 
   return (
-    <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="white" className="admin-form-card">
+    <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="yellow.50" className="admin-form-card">
       <CardHeader pb={2}>
-        <Heading size="md" color="teal.600">Registrar Nuevo Administrador</Heading>
+        <Heading size="md" color="violet.200">Registrar Nuevo Administrador</Heading>
       </CardHeader>
       <CardBody>
         <form onSubmit={handleSubmit}>
           <HStack spacing={4} mb={4}>
             <FormControl id="nombre" isRequired>
-              <FormLabel fontSize="sm">Nombre</FormLabel>
+              <FormLabel fontSize="sm" color="violet.200">Nombre</FormLabel>
               <Input
                 name="nombre"
                 value={formState.nombre}
                 onChange={handleChange}
                 placeholder="Nombre"
                 size="sm"
-                focusBorderColor="teal.500"
+                _focusVisible={{
+                  boxShadow: "0 0 0 1px #440044",
+                  borderColor: "#440044"
+                }}
               />
             </FormControl>
             <FormControl id="apellido">
-              <FormLabel fontSize="sm">Apellido</FormLabel>
+              <FormLabel fontSize="sm" color="violet.200">Apellido</FormLabel>
               <Input
                 name="apellido"
                 value={formState.apellido}
                 onChange={handleChange}
                 placeholder="Apellido (opcional)"
                 size="sm"
-                focusBorderColor="teal.500"
+                _focusVisible={{
+                  boxShadow: "0 0 0 1px #440044",
+                  borderColor: "#440044"
+                }}
               />
             </FormControl>
           </HStack>
           <FormControl id="email" isRequired mb={4}>
-            <FormLabel fontSize="sm">Email</FormLabel>
+            <FormLabel fontSize="sm" color="violet.200">Email</FormLabel>
             <Input
               name="email"
               type="email"
@@ -164,11 +170,14 @@ function AdminRegistrationForm({ cargarUsuarios }) {
               onChange={handleChange}
               placeholder="correo@ejemplo.com"
               size="sm"
-              focusBorderColor="teal.500"
+              _focusVisible={{
+                boxShadow: "0 0 0 1px #440044",
+                borderColor: "#440044"
+              }}
             />
           </FormControl>
           <FormControl id="password" isRequired mb={6}>
-            <FormLabel fontSize="sm">Contraseña</FormLabel>
+            <FormLabel fontSize="sm" color="violet.200">Contraseña</FormLabel>
             <Input
               name="password"
               type="password"
@@ -176,15 +185,18 @@ function AdminRegistrationForm({ cargarUsuarios }) {
               onChange={handleChange}
               placeholder="Mínimo 6 caracteres"
               size="sm"
-              focusBorderColor="teal.500"
+              _focusVisible={{
+                boxShadow: "0 0 0 1px #440044",
+                borderColor: "#440044"
+              }}
             />
           </FormControl>
           <Button
             type="submit"
-            colorScheme="teal"
+            variant='solid3D'
+            colorScheme='primary'
             isLoading={isSubmitting}
             loadingText="Registrando..."
-          /* isFullWidth */
           >
             Registrar Administrador
           </Button>
@@ -288,11 +300,9 @@ export default function AdminRegister() {
 
   return (
     <Box paddingTop="0" p={4} maxW="container.xl" mx="auto">
-      <Heading fontSize="1.3rem" color="primary.700" mb={6} textAlign="center">Gestión de Administradores</Heading>
+      <Heading fontSize="1.3rem" color="orange.50" mb={6} textAlign="center">Gestión de Administradores</Heading>
       <AdminRegistrationForm cargarUsuarios={cargarUsuarios} />
-      <Text mb={4} textAlign="center" color="gray.600" pt={4} borderTop="1px solid" borderColor="gray.200">
-        Solo el administrador con el email **{ADMIN_PROTEGIDO_EMAIL}** no puede ser eliminado.
-      </Text>
+      <Text fontSize="1.3rem" fontWeight="700" mb={4} mt={8} color="violet.200">Lista de Técnicas Registradas</Text>
 
       {loading ? (
         <HStack justifyContent="center" py={10}>
@@ -302,7 +312,7 @@ export default function AdminRegister() {
       ) : (
         <Box overflowX="auto" shadow="md" borderRadius="lg">
           <Table variant="simple" size="sm">
-            <Thead bg="primary.700">
+            <Thead bg="violet.200">
               <Tr>
                 <Th color="#F0DCC9">ID</Th>
                 <Th color="#F0DCC9">Nombre</Th>

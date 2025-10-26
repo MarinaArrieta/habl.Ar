@@ -7,7 +7,7 @@ export default function AdminLayout() {
         <Container maxW="container.xl" p={0}>
             <VStack w="full" spacing={5} align="center">
                 <Box mt={8}>
-                    <Heading mb={1} color="primary.700">
+                    <Heading mb={1} color="primary.700" textAlign="center">
                         Gestión de Usuarios y Contenido
                     </Heading>
                 </Box>
