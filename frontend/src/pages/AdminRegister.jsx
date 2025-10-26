@@ -125,44 +125,52 @@ function AdminRegistrationForm({ cargarUsuarios }) {
   };
 
   return (
-    <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="yellow.50" className="admin-form-card">
+    <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="formu.50" className="admin-form-card">
       <CardHeader pb={2}>
-        <Heading size="md" color="violet.200">Registrar Nuevo Administrador</Heading>
+        <Heading size="md" color="orange.200">Registrar Nuevo Administrador</Heading>
       </CardHeader>
       <CardBody>
         <form onSubmit={handleSubmit}>
           <HStack spacing={4} mb={4}>
             <FormControl id="nombre" isRequired>
-              <FormLabel fontSize="sm" color="violet.200">Nombre</FormLabel>
+              <FormLabel fontSize="sm" color="orange.200">Nombre</FormLabel>
               <Input
                 name="nombre"
                 value={formState.nombre}
                 onChange={handleChange}
                 placeholder="Nombre"
                 size="sm"
+                borderColor="orange.50"
+                _hover={{
+                  boxShadow: "0 0 0 1px #f9a66f",
+                }}
                 _focusVisible={{
-                  boxShadow: "0 0 0 1px #440044",
-                  borderColor: "#440044"
+                  boxShadow: "0 0 0 1px #DA5700",
+                  borderColor: "#DA5700"
                 }}
               />
             </FormControl>
             <FormControl id="apellido">
-              <FormLabel fontSize="sm" color="violet.200">Apellido</FormLabel>
+              <FormLabel fontSize="sm" color="orange.200">Apellido</FormLabel>
               <Input
                 name="apellido"
                 value={formState.apellido}
                 onChange={handleChange}
                 placeholder="Apellido (opcional)"
                 size="sm"
+                borderColor="orange.50"
+                _hover={{
+                  boxShadow: "0 0 0 1px #f9a66f",
+                }}
                 _focusVisible={{
-                  boxShadow: "0 0 0 1px #440044",
-                  borderColor: "#440044"
+                  boxShadow: "0 0 0 1px #DA5700",
+                  borderColor: "#DA5700"
                 }}
               />
             </FormControl>
           </HStack>
           <FormControl id="email" isRequired mb={4}>
-            <FormLabel fontSize="sm" color="violet.200">Email</FormLabel>
+            <FormLabel fontSize="sm" color="orange.200">Email</FormLabel>
             <Input
               name="email"
               type="email"
@@ -170,14 +178,18 @@ function AdminRegistrationForm({ cargarUsuarios }) {
               onChange={handleChange}
               placeholder="correo@ejemplo.com"
               size="sm"
+              borderColor="orange.50"
+              _hover={{
+                boxShadow: "0 0 0 1px #f9a66f",
+              }}
               _focusVisible={{
-                boxShadow: "0 0 0 1px #440044",
-                borderColor: "#440044"
+                boxShadow: "0 0 0 1px #DA5700",
+                borderColor: "#DA5700"
               }}
             />
           </FormControl>
           <FormControl id="password" isRequired mb={6}>
-            <FormLabel fontSize="sm" color="violet.200">Contraseña</FormLabel>
+            <FormLabel fontSize="sm" color="orange.200">Contraseña</FormLabel>
             <Input
               name="password"
               type="password"
@@ -185,21 +197,27 @@ function AdminRegistrationForm({ cargarUsuarios }) {
               onChange={handleChange}
               placeholder="Mínimo 6 caracteres"
               size="sm"
+              borderColor="orange.50"
+              _hover={{
+                boxShadow: "0 0 0 1px #f9a66f",
+              }}
               _focusVisible={{
-                boxShadow: "0 0 0 1px #440044",
-                borderColor: "#440044"
+                boxShadow: "0 0 0 1px #DA5700",
+                borderColor: "#DA5700"
               }}
             />
           </FormControl>
-          <Button
-            type="submit"
-            variant='solid3D'
-            colorScheme='primary'
-            isLoading={isSubmitting}
-            loadingText="Registrando..."
-          >
-            Registrar Administrador
-          </Button>
+          <Box display="flex" justifyContent="end">
+            <Button
+              type="submit"
+              variant='solid3D'
+              colorScheme='primary'
+              isLoading={isSubmitting}
+              loadingText="Registrando..."
+            >
+              Registrar Administrador
+            </Button>
+          </Box>
         </form>
       </CardBody>
     </Card>
@@ -302,7 +320,7 @@ export default function AdminRegister() {
     <Box paddingTop="0" p={4} maxW="container.xl" mx="auto">
       <Heading fontSize="1.3rem" color="orange.50" mb={6} textAlign="center">Gestión de Administradores</Heading>
       <AdminRegistrationForm cargarUsuarios={cargarUsuarios} />
-      <Text fontSize="1.3rem" fontWeight="700" mb={4} mt={8} color="violet.200">Lista de Técnicas Registradas</Text>
+      <Text fontSize="1.3rem" fontWeight="700" mb={4} mt={8} color="orange.200">Lista de Técnicas Registradas</Text>
 
       {loading ? (
         <HStack justifyContent="center" py={10}>
@@ -312,7 +330,7 @@ export default function AdminRegister() {
       ) : (
         <Box overflowX="auto" shadow="md" borderRadius="lg">
           <Table variant="simple" size="sm">
-            <Thead bg="violet.200">
+            <Thead bg="orange.50">
               <Tr>
                 <Th color="#F0DCC9">ID</Th>
                 <Th color="#F0DCC9">Nombre</Th>
@@ -321,18 +339,18 @@ export default function AdminRegister() {
                 <Th color="#F0DCC9">Acciones</Th>
               </Tr>
             </Thead>
-            <Tbody bg="yellow.50">
+            <Tbody bg="orange.300">
               {usuarios.map((user) => (
                 <Tr key={user.id} _hover={{ bg: "gray.50" }}>
-                  <Td maxW="120px" overflow="hidden" textOverflow="ellipsis">{user.id}</Td>
-                  <Td>{user.nombre} {user.apellido}</Td>
-                  <Td>{user.email}</Td>
-                  <Td>
+                  <Td maxW="120px" overflow="hidden" textOverflow="ellipsis" color="orange.200">{user.id}</Td>
+                  <Td color="orange.200">{user.nombre} {user.apellido}</Td>
+                  <Td color="orange.200">{user.email}</Td>
+                  <Td color="orange.200">
                     <Badge colorScheme={getBadgeColor(user.tipo)}>
                       {user.tipo}
                     </Badge>
                   </Td>
-                  <Td>
+                  <Td color="orange.200">
                     {/* Lógica de Exclusión: Solo muestra el botón si el email NO es el protegido */}
                     {user.email !== ADMIN_PROTEGIDO_EMAIL ? (
                       <Button
@@ -343,7 +361,7 @@ export default function AdminRegister() {
                         Eliminar
                       </Button>
                     ) : (
-                      <Badge colorScheme="orange">
+                      <Badge colorScheme="green">
                         Protegido
                       </Badge>
                     )}

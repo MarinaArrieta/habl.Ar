@@ -159,9 +159,9 @@ export default function AdminTechniques() {
             <Heading fontSize="1.3rem" color="blue.50" mb={6} textAlign="center">Gestión de Técnicas de Ayuda</Heading>
 
             {/* 1. Formulario de Registro (Solo Crear) */}
-            <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="blue.50">
+            <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="formu.100">
                 <CardHeader pb={2}>
-                    <Heading size="md" color="#F0DCC9">
+                    <Heading size="md" color="blue.50">
                         Registrar Nueva Técnica
                     </Heading>
                 </CardHeader>
@@ -169,24 +169,30 @@ export default function AdminTechniques() {
                     <VStack spacing={4} align="stretch">
                         <HStack spacing={4} align="stretch">
                             <Input
-                                borderColor="#F0DCC9"
-                                color="#F0DCC9"
+                                borderColor="blue.50 "
+                                color="blue.5"
                                 placeholder="Título"
                                 value={newTitulo}
                                 onChange={(e) => setNewTitulo(e.target.value)}
+                                _hover={{
+                                    boxShadow: "0 0 0 1px #a0a4ffff",
+                                }}
                                 _focusVisible={{
-                                    boxShadow: "0 0 0 1px #F0DCC9",
-                                    borderColor: "#F0DCC9"
+                                    boxShadow: "0 0 0 1px #353887",
+                                    borderColor: "blue.50"
                                 }}
                             />
                             <Select
                                 /* placeholder="Selecciona el Tipo de Técnica" */
-                                borderColor="#F0DCC9"
+                                borderColor="blue.50 "
                                 value={newTipo}
                                 onChange={(e) => setNewTipo(e.target.value)}
+                                _hover={{
+                                    boxShadow: "0 0 0 1px #a0a4ffff",
+                                }}
                                 _focusVisible={{
-                                    boxShadow: "0 0 0 1px #F0DCC9",
-                                    borderColor: "#F0DCC9"
+                                    boxShadow: "0 0 0 1px #353887",
+                                    borderColor: "blue.50"
                                 }}
                             >
                                 {TIPOS_TECNICA.map(t => (
@@ -196,36 +202,43 @@ export default function AdminTechniques() {
                         </HStack>
                         <Textarea
                             placeholder="Descripción"
-                            borderColor="#F0DCC9"
-                            color="#F0DCC9"
+                            borderColor="blue.50 "
+                            color="blue.5"
                             value={newDescripcion}
                             onChange={(e) => setNewDescripcion(e.target.value)}
+                            _hover={{
+                                boxShadow: "0 0 0 1px #a0a4ffff",
+                            }}
                             _focusVisible={{
-                                boxShadow: "0 0 0 1px #F0DCC9",
-                                borderColor: "#F0DCC9"
+                                boxShadow: "0 0 0 1px #353887",
+                                borderColor: "blue.50"
                             }}
                         />
                         <Input
                             placeholder="URL multimedia (opcional: Youtube, etc.)"
-                            borderColor="#F0DCC9"
-                            color="#F0DCC9"
+                            borderColor="blue.50 "
+                            color="blue.5"
                             value={newUrl}
                             onChange={(e) => setNewUrl(e.target.value)}
+                            _hover={{
+                                boxShadow: "0 0 0 1px #a0a4ffff",
+                            }}
                             _focusVisible={{
-                                boxShadow: "0 0 0 1px #F0DCC9",
-                                borderColor: "#F0DCC9"
+                                boxShadow: "0 0 0 1px #353887",
+                                borderColor: "blue.50"
                             }}
                         />
-
                     </VStack>
-                    <Button
-                        variant='solid3D'
-                        colorScheme='primary'
-                        mt="25px"
-                        onClick={handleRegister}
-                    >
-                        Crear Técnica
-                    </Button>
+                    <Box display="flex" justifyContent="end">
+                        <Button
+                            variant='solid3D'
+                            colorScheme='primary'
+                            mt="25px"
+                            onClick={handleRegister}
+                        >
+                            Crear Técnica
+                        </Button>
+                    </Box>
                 </CardBody>
             </Card>
 
@@ -259,7 +272,7 @@ export default function AdminTechniques() {
                                         {/* Modo Edición */}
                                         {editingId === t.id ? (
                                             <>
-                                                <Td>{t.id}</Td>
+                                                <Td >{t.id}</Td>
                                                 <Td><Input name="titulo" value={editForm.titulo} onChange={handleEditChange} size="sm" /></Td>
                                                 <Td>
                                                     <Select name="tipo" value={editForm.tipo} onChange={handleEditChange} size="sm">

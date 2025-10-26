@@ -71,12 +71,24 @@ export default function VolunterProfile() {
         return;
       }
 
-      setVoluntario(fetchedData);
+      const formattedDate = fetchedData.fecha_nacimiento
+        ? fetchedData.fecha_nacimiento.split('T')[0]
+        : "";
+
+      const finalData = {
+        ...fetchedData,
+        fecha_nacimiento: formattedDate
+      };
+
+      setVoluntario(finalData); // Usar el objeto con la fecha formateada
+
+      /* setVoluntario(fetchedData); */
+      
       setFormData({
         nombre: fetchedData.nombre || "",
         apellido: fetchedData.apellido || "",
         email: fetchedData.email || "",
-        fecha_nacimiento: fetchedData.fecha_nacimiento ? fetchedData.fecha_nacimiento.split('T')[0] : "",
+        fecha_nacimiento: formattedDate,
         contrasena: "",
       });
       setError(null);

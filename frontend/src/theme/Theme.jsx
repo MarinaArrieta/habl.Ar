@@ -44,10 +44,12 @@ const theme = extendTheme({
             50: "#DA5700",
             100: "#f9a66f",
             200: "#6e2c00",
+            300: "#e9b18c",
         },
         blue: {
             50: "#353887",
-            100: "#8c8ec6",
+            100: "#c3c6eb",
+            200: "#6469ffff",
         },
         violet: {
             50: "#A803A8",
@@ -58,6 +60,10 @@ const theme = extendTheme({
             50: "#920B0B",
             100: "#623e3e",
         },
+        formu: {
+            50: "#d8c2ae",
+            100: "#afb0bea1",
+        }
     },
 
     components: {
