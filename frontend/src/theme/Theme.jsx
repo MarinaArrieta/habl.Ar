@@ -47,13 +47,17 @@ const theme = extendTheme({
         },
         blue: {
             50: "#353887",
+            100: "#8c8ec6",
         },
         violet: {
             50: "#A803A8",
             100: "#c07fc0",
             200: "#440044",
         },
-        red: { 50: "#920B0B" },
+        red: { 
+            50: "#920B0B",
+            100: "#623e3e",
+        },
     },
 
     components: {

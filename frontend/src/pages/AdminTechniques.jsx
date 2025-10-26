@@ -34,7 +34,6 @@ const TIPOS_TECNICA = [
     "Respiración Consciente",
     "Relajación Muscular Progresiva (RMP)",
     "Meditación y Mindfulness",
-    "Otros",
 ];
 
 export default function AdminTechniques() {
@@ -157,29 +156,38 @@ export default function AdminTechniques() {
 
     return (
         <Box p={4} maxW="container.xl" mx="auto">
-            <Heading size="lg" mb={6} textAlign="center">Gestión de Técnicas de Ayuda</Heading>
+            <Heading fontSize="1.3rem" color="blue.50" mb={6} textAlign="center">Gestión de Técnicas de Ayuda</Heading>
 
             {/* 1. Formulario de Registro (Solo Crear) */}
-            <Card mb={8} p={4} borderRadius="xl" shadow="lg">
+            <Card mb={8} p={4} borderRadius="xl" shadow="lg" bg="blue.50">
                 <CardHeader pb={2}>
-                    <Heading size="md" color="teal.600">
-                        ➕ Registrar Nueva Técnica
+                    <Heading size="md" color="#F0DCC9">
+                        Registrar Nueva Técnica
                     </Heading>
                 </CardHeader>
                 <CardBody>
                     <VStack spacing={4} align="stretch">
                         <HStack spacing={4} align="stretch">
                             <Input
+                                borderColor="#F0DCC9"
+                                color="#F0DCC9"
                                 placeholder="Título"
                                 value={newTitulo}
                                 onChange={(e) => setNewTitulo(e.target.value)}
-                                focusBorderColor="teal.500"
+                                _focusVisible={{
+                                    boxShadow: "0 0 0 1px #F0DCC9",
+                                    borderColor: "#F0DCC9"
+                                }}
                             />
                             <Select
-                                placeholder="Selecciona el Tipo de Técnica"
+                                /* placeholder="Selecciona el Tipo de Técnica" */
+                                borderColor="#F0DCC9"
                                 value={newTipo}
                                 onChange={(e) => setNewTipo(e.target.value)}
-                                focusBorderColor="teal.500"
+                                _focusVisible={{
+                                    boxShadow: "0 0 0 1px #F0DCC9",
+                                    borderColor: "#F0DCC9"
+                                }}
                             >
                                 {TIPOS_TECNICA.map(t => (
                                     <option key={t} value={t}>{t}</option>
@@ -188,25 +196,41 @@ export default function AdminTechniques() {
                         </HStack>
                         <Textarea
                             placeholder="Descripción"
+                            borderColor="#F0DCC9"
+                            color="#F0DCC9"
                             value={newDescripcion}
                             onChange={(e) => setNewDescripcion(e.target.value)}
-                            focusBorderColor="teal.500"
+                            _focusVisible={{
+                                boxShadow: "0 0 0 1px #F0DCC9",
+                                borderColor: "#F0DCC9"
+                            }}
                         />
                         <Input
                             placeholder="URL multimedia (opcional: Youtube, etc.)"
+                            borderColor="#F0DCC9"
+                            color="#F0DCC9"
                             value={newUrl}
                             onChange={(e) => setNewUrl(e.target.value)}
-                            focusBorderColor="teal.500"
+                            _focusVisible={{
+                                boxShadow: "0 0 0 1px #F0DCC9",
+                                borderColor: "#F0DCC9"
+                            }}
                         />
-                        <Button colorScheme="teal" onClick={handleRegister}>
-                            Crear Técnica
-                        </Button>
+
                     </VStack>
+                    <Button
+                        variant='solid3D'
+                        colorScheme='primary'
+                        mt="25px"
+                        onClick={handleRegister}
+                    >
+                        Crear Técnica
+                    </Button>
                 </CardBody>
             </Card>
 
             {/* 2. Listado de Técnicas (Tabla con Edición en Línea) */}
-            <Heading size="md" mb={4} mt={8}>Lista de Técnicas Registradas</Heading>
+            <Heading size="md" mb={4} mt={8} color="blue.50">Lista de Técnicas Registradas</Heading>
 
             {loading ? (
                 <HStack justifyContent="center" py={10}>
@@ -216,17 +240,17 @@ export default function AdminTechniques() {
             ) : (
                 <Box overflowX="auto" shadow="md" borderRadius="lg">
                     <Table variant="simple" size="sm">
-                        <Thead bg="teal.600">
+                        <Thead bg="blue.50">
                             <Tr>
-                                <Th color="white" w="50px">ID</Th>
-                                <Th color="white" w="180px">Título</Th>
-                                <Th color="white" w="150px">Tipo</Th>
-                                <Th color="white" w="300px">Descripción</Th>
-                                <Th color="white" w="120px">URL Multimedia</Th>
-                                <Th color="white" w="180px" textAlign="center">Acciones</Th>
+                                <Th color="#F0DCC9" w="50px">ID</Th>
+                                <Th color="#F0DCC9" w="180px">Título</Th>
+                                <Th color="#F0DCC9" w="150px">Tipo</Th>
+                                <Th color="#F0DCC9" w="300px">Descripción</Th>
+                                <Th color="#F0DCC9" w="120px">Multimedia</Th>
+                                <Th color="#F0DCC9" w="180px" textAlign="center">Acciones</Th>
                             </Tr>
                         </Thead>
-                        <Tbody bg="white">
+                        <Tbody bg="blue.100">
                             {tecnicas.length === 0 ? (
                                 <Tr><Td colSpan={6} textAlign="center">No hay técnicas registradas.</Td></Tr>
                             ) : (
@@ -268,7 +292,7 @@ export default function AdminTechniques() {
                                                 </Td>
                                                 <Td>
                                                     {t.url_multimedia ? (
-                                                        <a href={t.url_multimedia} target="_blank" rel="noreferrer" style={{ color: 'teal', fontSize: '12px' }}>Ver Link</a>
+                                                        <a href={t.url_multimedia} target="_blank" rel="noreferrer" style={{ color: '#014126', fontSize: '12px' }}>Ver Link</a>
                                                     ) : (
                                                         <Text fontSize="xs" color="gray.500">N/A</Text>
                                                     )}

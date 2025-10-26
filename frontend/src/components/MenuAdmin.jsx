@@ -50,7 +50,7 @@ export default function AdminMenu() {
                     variant="none"
                     leftIcon={<FaUserShield />}
                     fontSize="0.8rem"
-                    color="red.50"
+                    color="blue.50"
                     _hover={{ color: "orange.50" }}
                 >
                     Gestión de Técnicas
