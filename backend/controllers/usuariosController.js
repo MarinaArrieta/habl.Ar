@@ -196,40 +196,6 @@ export const getUsuariosController = async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor al obtener usuarios." });
     }
 };
-
-// ==========================================================
-// REGISTRAR/PROMOVER A ADMIN (Solo Admin a Admin)
-// ==========================================================
-/* export const registerAdminController = async (req, res) => {
-    try {
-        const { id } = req.body; // Esperamos el ID del usuario a promover
-
-        // Validación de permiso: Solo administradores pueden usar esta ruta
-        if (req.user.tipo !== 'admin') {
-            return res.status(403).json({ error: "Acceso denegado. Solo administradores pueden crear/promover admins." });
-        }
-
-        if (!id) {
-            return res.status(400).json({ error: "Se requiere el ID del usuario a promover." });
-        }
-
-        // Actualizar el tipo de usuario a 'admin'
-        const [result] = await pool.query(
-            "UPDATE usuarios SET tipo = 'admin' WHERE id = ?",
-            [id]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Usuario no encontrado o ya es administrador." });
-        }
-
-        res.json({ message: `Usuario ID ${id} promovido a administrador con éxito.` });
-
-    } catch (error) {
-        console.error("Error al promover a administrador:", error);
-        res.status(500).json({ error: "Error interno al promover a administrador." });
-    }
-}; */
 // ==========================================================
 // REGISTRAR NUEVO ADMIN (Solo Admin a Admin)
 // ==========================================================

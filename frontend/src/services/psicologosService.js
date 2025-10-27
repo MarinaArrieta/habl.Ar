@@ -1,5 +1,6 @@
 const API_BASE_URL = 'http://localhost:3000/api';
 const USERS_URL = `${API_BASE_URL}/usuarios`;
+const PAYMENT_URL = `${API_BASE_URL}/mercadopago`;
 // Función auxiliar para manejar la autenticación
 const getAuthHeaders = (extraHeaders = {}) => {
     const token = localStorage.getItem("token");
@@ -101,10 +102,25 @@ export const aprobarPsicologo = async (id) => {
     }
 };
 
+export const createPaymentPreference = async (paymentDetails) => {
+    try {
+        const response = await fetch(`${PAYMENT_URL}/preference`, {
+            method: 'POST',
+            headers: getAuthHeaders(), // Usa 'Content-Type': 'application/json' de getAuthHeaders
+            body: JSON.stringify(paymentDetails),
+        });
+        // La respuesta del backend debe ser { preferenceId: 'ID_DE_MP' }
+        return handleResponse(response);
+    } catch (error) {
+        console.error("Error en createPaymentPreference:", error);
+        throw error;
+    }
+};
+
 export const getPsicologosList = async () => {
     try {
         const response = await fetch(`${USERS_URL}/psicologos`);
-        
+
         if (!response.ok) {
             throw new Error(`Error al cargar la lista de psicólogos: ${response.statusText}`);
         }

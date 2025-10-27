@@ -3,11 +3,11 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-
 import tecnicasRoutes from "./routes/tecnicas.js";
 import usuarios from "./routes/usuarios.js";
 import calificacionesRoutes from "./routes/calificaciones.js";
-import { loginController } from "./controllers/usuariosController.js"; 
+import { loginController } from "./controllers/usuariosController.js";
+import mercadopagoRoutes from './routes/mercadopagoRoutes.js';
 
 dotenv.config();
 
@@ -27,6 +27,7 @@ app.post("/api/login", loginController);
 app.use("/tecnicas", tecnicasRoutes);
 app.use('/api/usuarios', usuarios);
 app.use("/calificaciones", calificacionesRoutes);
+app.use('/api/mercadopago', mercadopagoRoutes);
 
 app.listen(PORT, () => {
     console.log(`✅ Server is running at http://localhost:${PORT}`);
