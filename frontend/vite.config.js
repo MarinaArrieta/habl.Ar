@@ -10,6 +10,16 @@ export default defineConfig({
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },
   },
+  build: {
+    rollupOptions: {
+      external: ['axios'],
+      output: {
+        globals: {
+          axios: 'axios'
+        }
+      }
+    }
+  },
   // ==========================================================
   // 💡 AÑADIDO: CONFIGURACIÓN DE PROXY PARA REDIRIGIR /API A BACKEND (PUERTO 3000)
   // ==========================================================
