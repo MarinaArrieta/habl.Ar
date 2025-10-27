@@ -11,14 +11,15 @@ export default defineConfig({
     },
   },
   build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true
+    },
     rollupOptions: {
-      external: ['axios'],
-      output: {
-        globals: {
-          axios: 'axios'
-        }
-      }
-    }
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
+    },
   },
   // ==========================================================
   // 💡 AÑADIDO: CONFIGURACIÓN DE PROXY PARA REDIRIGIR /API A BACKEND (PUERTO 3000)
