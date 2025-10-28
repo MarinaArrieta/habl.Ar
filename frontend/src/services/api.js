@@ -1,5 +1,7 @@
 import axios from "axios";
-const API = axios.create({ baseURL: "http://localhost:3000" });
+/* const API = axios.create({ baseURL: "http://localhost:3000" }); */
+const VERCEL_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const API = axios.create({ baseURL: VERCEL_BASE_URL });
 
 API.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
@@ -31,11 +33,11 @@ export const uploadVolunteerProfilePicture = (id, formData) =>
     });
 
 // TÉCNICAS
-export const getTecnicas = () => API.get("/tecnicas");
-export const getTecnica = (id) => API.get(`/tecnicas/${id}`);
-export const createTecnica = (data) => API.post("/tecnicas", data);
-export const updateTecnica = (id, data) => API.put(`/tecnicas/${id}`, data);
-export const deleteTecnica = (id) => API.delete(`/tecnicas/${id}`);
+export const getTecnicas = () => API.get("/api/tecnicas");
+export const getTecnica = (id) => API.get(`/api/tecnicas/${id}`);
+export const createTecnica = (data) => API.post("/api/tecnicas", data);
+export const updateTecnica = (id, data) => API.put(`/api/tecnicas/${id}`, data);
+export const deleteTecnica = (id) => API.delete(`/api/tecnicas/${id}`);
 
 export default API;
 
