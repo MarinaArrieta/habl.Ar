@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+/* const API_BASE_URL = 'http://localhost:3000/api'; */
+const BASE_DOMAIN = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = `${BASE_DOMAIN}/api`;
 const USERS_URL = `${API_BASE_URL}/usuarios`;
 const PAYMENT_URL = `${API_BASE_URL}/mercadopago`;
 // Función auxiliar para manejar la autenticación

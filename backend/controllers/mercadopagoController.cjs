@@ -21,20 +21,20 @@ let pool;
 })();
 // --------------------
 
+// Configuración de Mercado Pago
 mercadopago.configure({
     access_token: process.env.MP_ACCESS_TOKEN,
 });
 
-const MEMBER_FEE_AMOUNT = 1000;
-const MEMBER_FEE_TITLE = "Membresía Anual de Psicólogo/Voluntario";
+const MEMBER_FEE_AMOUNT = 5000;
+const MEMBER_FEE_TITLE = "Membresía de Psicólogo";
 
 // ==========================================================
 // CREATE PREFERENCE CONTROLLER
 // ==========================================================
 const createPreferenceController = async (req, res) => {
     try {
-        // 🛑 CORRECCIÓN: Obtener los datos del usuario del cuerpo (req.body),
-        // ya que la ruta no está protegida y req.user no existe.
+        // Obtener los datos del usuario del cuerpo (req.body)
         const { userId, userEmail } = req.body;
 
         // Validación de datos esenciales
@@ -56,6 +56,7 @@ const createPreferenceController = async (req, res) => {
                 email: userEmail,
             },
             back_urls: {
+                // Se asume que FRONTEND_URL ya fue corregida con el protocolo (http:// o https://)
                 success: `${process.env.FRONTEND_URL}/pago/success`,
                 failure: `${process.env.FRONTEND_URL}/pago/failure`,
                 pending: `${process.env.FRONTEND_URL}/pago/pending`,
@@ -63,6 +64,7 @@ const createPreferenceController = async (req, res) => {
             auto_return: "approved",
             // Usamos userId como referencia externa para el webhook
             external_reference: userId.toString(),
+            // Se asume que BACKEND_URL ya fue corregida con el protocolo (https://)
             notification_url: `${process.env.BACKEND_URL}/api/mercadopago/webhook`,
         };
 
@@ -74,7 +76,6 @@ const createPreferenceController = async (req, res) => {
         });
 
     } catch (error) {
-        // Asegúrate de que este console.error está registrando el error completo
         console.error("Error al crear la preferencia de MP:", error);
         res.status(500).json({ error: "Error interno al iniciar el proceso de pago" });
     }
@@ -87,9 +88,21 @@ const webhookController = async (req, res) => {
     try {
         const { query } = req;
 
+        // CRÍTICO: Verificar si el pool de DB está disponible antes de usarlo
+        if (!pool) {
+            console.error("❌ DB Pool no está disponible. No se puede procesar el webhook. MP reintentará.");
+            // Devolver 503 para que MP sepa que debe reintentar.
+            return res.sendStatus(503); 
+        }
+
         if (query.topic === 'payment') {
             const paymentId = query.id;
 
+            // ⚠️ Validación de seguridad: Asegurar que el ID del pago es un número
+            if (!paymentId) {
+                 return res.sendStatus(400); // Bad Request si no hay ID
+            }
+            
             const paymentDetail = await mercadopago.payment.findById(paymentId);
 
             const data = paymentDetail.body;
@@ -115,11 +128,13 @@ const webhookController = async (req, res) => {
             }
         }
 
+        // Devolvemos 200 OK para confirmar a MP que recibimos la notificación
         res.sendStatus(200);
 
     } catch (error) {
         console.error("Error en el Webhook de Mercado Pago:", error);
         // Devolvemos 200 OK a MP incluso si hay error para evitar reintentos infinitos
+        // NOTA: En el caso de error de pool (arriba) sí devolvimos 503.
         res.sendStatus(200);
     }
 };
