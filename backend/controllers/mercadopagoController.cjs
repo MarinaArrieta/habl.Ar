@@ -73,9 +73,9 @@ const createPreferenceController = async (req, res) => {
       ],
       payer: { email: userEmail },
       back_urls: {
-        success: `${FRONTEND_URL}/pago/success`,
-        failure: `${FRONTEND_URL}/pago/failure`,
-        pending: `${FRONTEND_URL}/pago/pending`,
+        success: `${FRONTEND_URL}/`,
+        failure: `${FRONTEND_URL}/`,
+        pending: `${FRONTEND_URL}/`,
       },
       auto_return: "approved",
       external_reference: userId.toString(),
