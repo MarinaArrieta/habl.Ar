@@ -37,7 +37,7 @@ const getAuthHeaders = () => {
 // Obtener todos los usuarios (GET /api/usuarios)
 const getUsuarios = async () => {
     try {
-        const response = await axios.get("/api/usuarios", getAuthHeaders());
+        const response = await axios.get("https://habl-ar.onrender.com/api/usuarios", getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -49,7 +49,7 @@ const getUsuarios = async () => {
 const deleteUsuario = async (id) => {
     try {
         // Usamos DELETE al endpoint con el ID en la URL.
-        const response = await axios.delete(`/api/usuarios/${id}`, getAuthHeaders());
+        const response = await axios.delete(`https://habl-ar.onrender.com/api/usuarios/${id}`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error("Error al eliminar usuario:", error);
@@ -65,7 +65,7 @@ const deleteUsuario = async (id) => {
 // NUEVA FUNCIÓN: Aprobar un psicólogo (PUT /api/usuarios/approve-psicologo/:id)
 const aprobarPsicologo = async (id) => {
     try {
-        const response = await axios.put(`/api/usuarios/approve-psicologo/${id}`, {}, getAuthHeaders());
+        const response = await axios.put(`https://habl-ar.onrender.com/api/usuarios/approve-psicologo/${id}`, {}, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error("Error al aprobar psicólogo:", error);

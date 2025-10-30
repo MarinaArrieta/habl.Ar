@@ -38,7 +38,7 @@ const getAuthHeaders = () => {
 // Obtener todos los usuarios (GET /api/usuarios)
 const getUsuarios = async () => {
   try {
-    const response = await axios.get("/api/usuarios", getAuthHeaders());
+    const response = await axios.get("https://habl-ar.onrender.com/api/usuarios", getAuthHeaders());
     return response.data;
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
@@ -49,7 +49,7 @@ const getUsuarios = async () => {
 // FUNCIÓN: Eliminar un usuario (DELETE /api/usuarios/:id)
 const deleteUsuario = async (id) => {
   try {
-    const response = await axios.delete(`/api/usuarios/${id}`, getAuthHeaders());
+    const response = await axios.delete(`https://habl-ar.onrender.com/api/usuarios/${id}`, getAuthHeaders());
     return response.data;
   } catch (error) {
     console.error("Error al eliminar usuario:", error);
@@ -60,7 +60,7 @@ const deleteUsuario = async (id) => {
 // FUNCIÓN: Registrar nuevo administrador (POST /api/usuarios/register-admin)
 const registerAdminUser = async (adminData) => {
   try {
-    const registrationUrl = `/api/usuarios/register-admin`;
+    const registrationUrl = `https://habl-ar.onrender.com/api/usuarios/register-admin`;
     const response = await axios.post(registrationUrl, adminData, getAuthHeaders());
 
     return response.data;
