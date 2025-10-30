@@ -47,7 +47,7 @@ export default function VolunterProfile() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const BASE_UPLOAD_URL = "http://localhost:3000/uploads/";
+  const BASE_UPLOAD_URL = "https://habl-ar.onrender.com/uploads/";
 
   const getFotoUrl = (fotoFilename) => {
     if (!fotoFilename) return null;

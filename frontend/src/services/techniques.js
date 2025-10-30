@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/tecnicas";
+const API_URL = "https://habl-ar.onrender.com/tecnicas";
 // ⚠️ Nota: Asegúrate de que tu backend esté configurado para responder en el puerto 3000
 
 /**
@@ -21,7 +21,7 @@ export const fetchTecnicas = async () => {
 export const getTecnicasPorTipo = async (slug) => {
   try {
     // La URL de la API debe incluir el slug para que el backend filtre:
-    // Ejemplo: http://localhost:3000/tecnicas/tipo/respiracion-consciente
+    // Ejemplo: https://habl-ar.onrender.com/tecnicas/tipo/respiracion-consciente
     const response = await fetch(`${API_URL}/tipo/${slug}`);
     
     if (!response.ok) throw new Error(`Error fetching técnicas de la categoría ${slug}`);

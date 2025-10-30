@@ -27,7 +27,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // El puerto de tu servidor Express
+        target: 'https://habl-ar.onrender.com', // El puerto de tu servidor Express
         changeOrigin: true,
         secure: false, // Usar 'false' si tu backend no usa HTTPS
       },
