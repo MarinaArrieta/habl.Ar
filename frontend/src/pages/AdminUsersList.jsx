@@ -24,6 +24,7 @@ import { FaUserPlus, FaCheckCircle, FaTrashAlt } from "react-icons/fa"; // Impor
 // ==========================================================
 // FUNCIONES DE API INTEGRADAS
 // ==========================================================
+const BASE_DOMAIN = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -37,7 +38,7 @@ const getAuthHeaders = () => {
 // Obtener todos los usuarios (GET /api/usuarios)
 const getUsuarios = async () => {
     try {
-        const response = await axios.get("https://habl-ar.onrender.com/api/usuarios", getAuthHeaders());
+        const response = await axios.get(`${BASE_DOMAIN}/api/usuarios`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -49,7 +50,7 @@ const getUsuarios = async () => {
 const deleteUsuario = async (id) => {
     try {
         // Usamos DELETE al endpoint con el ID en la URL.
-        const response = await axios.delete(`https://habl-ar.onrender.com/api/usuarios/${id}`, getAuthHeaders());
+        const response = await axios.delete(`${BASE_DOMAIN}/api/usuarios/${id}`, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error("Error al eliminar usuario:", error);
@@ -65,7 +66,7 @@ const deleteUsuario = async (id) => {
 // NUEVA FUNCIÓN: Aprobar un psicólogo (PUT /api/usuarios/approve-psicologo/:id)
 const aprobarPsicologo = async (id) => {
     try {
-        const response = await axios.put(`https://habl-ar.onrender.com/api/usuarios/approve-psicologo/${id}`, {}, getAuthHeaders());
+        const response = await axios.put(`${BASE_DOMAIN}/api/usuarios/approve-psicologo/${id}`, {}, getAuthHeaders());
         return response.data;
     } catch (error) {
         console.error("Error al aprobar psicólogo:", error);

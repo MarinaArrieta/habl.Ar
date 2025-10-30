@@ -27,7 +27,7 @@ import {
 import { getUsuario, updateUsuario, deleteUsuario } from "../services/api";
 import { UserContext } from "../context/UserContext";
 
-const API_BASE_URL = "https://habl-ar.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
 const DOCUMENTS_BASE_URL = `${API_BASE_URL}/uploads/`;
 
 export default function PsicologoProfile() {
