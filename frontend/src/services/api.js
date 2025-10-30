@@ -1,6 +1,6 @@
 import axios from "axios";
 /* const API = axios.create({ baseURL: "https://habl-ar.onrender.com" }); */
-const VERCEL_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://habl-ar.onrender.com";
+const VERCEL_BASE_URL = import.meta.env.BACKEND_BASE_URL || "https://habl-ar.onrender.com";
 const API = axios.create({ baseURL: VERCEL_BASE_URL });
 
 API.interceptors.request.use((config) => {
