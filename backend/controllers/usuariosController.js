@@ -471,7 +471,8 @@ export const getPsicologosListController = async (req, res) => {
 
         // La magia: Mapear para construir la URL completa de la foto de perfil
         const psicologosConUrl = rows.map(psicologo => {
-            const baseUrl = `http://localhost:${process.env.PORT || 3000}/uploads/`;
+            const backendUrl = (process.env.BACKEND_URL || 'http://localhost:3000');
+            const baseUrl = `${backendUrl}/uploads/`;
             return {
                 ...psicologo,
                 // Si fotoUrl existe, crea la URL completa; de lo contrario, es null
