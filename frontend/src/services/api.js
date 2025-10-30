@@ -10,7 +10,7 @@ API.interceptors.request.use((config) => {
 });
 
 // USUARIOS
-export const registerPublic = (data) => API.post("/api/register-public", data);
+export const registerPublic = (data) => API.post("/api/usuarios/register-public", data);
 export const login = (data) => API.post("/api/login", data);
 export const getUsuarios = () => API.get("/api/usuarios");
 export const getUsuario = (id) => API.get(`/api/usuarios/${id}`);

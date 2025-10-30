@@ -39,7 +39,7 @@ const handleResponse = async (response) => {
 
 export const registerPublic = async (formData) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/register-public`, {
+        const response = await fetch(`${API_BASE_URL}/usuarios/register-public`, {
             method: 'POST',
             body: formData,
         });
